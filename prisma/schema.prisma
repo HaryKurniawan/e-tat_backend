@@ -1,0 +1,1004 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================================
+// ENUM TYPES
+// =====================================================================
+
+enum UserRole {
+  PENGAJU
+  ADMIN
+  MEDIS
+  HUKUM
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  ADMIN_REVIEW
+  NEEDS_CORRECTION
+  AWAITING_DISPOSITION
+  APPROVED
+  SCHEDULED
+  ASSESSMENT_ACTIVE
+  READY_FOR_CONFERENCE
+  CONFERENCE_HELD
+  CONFERENCE_CLARIFICATION_REQUIRED
+  OUTCOME_RECORDED_FOR_DRAFT
+  AWAITING_SIGNED_OUTPUTS
+  RESULTS_ISSUED
+  REJECTED
+  OUT_OF_SCOPE_REFERRED
+}
+
+enum AssessmentStatus {
+  NOT_STARTED
+  DRAFT
+  PENDING_REVIEW
+  FINAL
+  AMENDMENT_REQUIRED
+  SUPERSEDED
+}
+
+enum DeliveryStatus {
+  NOT_APPLICABLE
+  NOT_ISSUED
+  ISSUED_NOT_DELIVERED
+  PARTIALLY_DELIVERED
+  DELIVERED
+  ACKNOWLEDGED
+}
+
+enum FollowupStatus {
+  NOT_APPLICABLE_YET
+  NOT_APPLICABLE
+  NOT_YET_REPORTED
+  REPORTED_PENDING_VERIFICATION
+  VERIFIED_IMPLEMENTED
+  VERIFIED_NOT_IMPLEMENTED
+  CLARIFICATION_REQUIRED
+}
+
+enum StatusVerifikasiDokumen {
+  sesuai
+  perlu_perbaikan
+  belum_tersedia
+  tidak_berlaku
+  belum_diperiksa
+  belum_diunggah
+}
+
+enum StatusUjiLab {
+  belum_uji
+  proses_lab
+  positif
+  negatif
+}
+
+enum KategoriInstansi {
+  Polres_Polresta
+  Polda
+  Polsek
+  BNNK_BNNP
+  Kejaksaan
+  Lainnya
+}
+
+enum RegistrasiStatus {
+  pending
+  approved
+  rejected
+}
+
+enum AnalisisPeran {
+  Penyalahguna_Murni
+  Korban_Penyalahgunaan
+  Pecandu_dengan_Kepemilikan_Terbatas
+  Indikasi_Pengedar_Jaringan
+  Belum_Dapat_Disimpulkan
+}
+
+enum RekomendasiHukum {
+  Proses_Hukum_Dilanjutkan_dengan_Rehabilitasi
+  Proses_Hukum_Dilanjutkan_Tanpa_Rehabilitasi
+  Penerapan_Keadilan_Restoratif_Diversi
+  Perlu_Pendalaman_Penyidikan
+}
+
+enum JenisRekomendasiFinal {
+  Rehabilitasi_Rawat_Inap
+  Rehabilitasi_Rawat_Jalan
+  Lanjut_Proses_Hukum_Tanpa_Rehab
+  Pemeriksaan_Tambahan
+}
+
+enum StatusPengesah {
+  menunggu
+  disahkan
+  ditolak_koreksi
+}
+
+enum StatusPleno {
+  terjadwal
+  berlangsung
+  selesai_sepakat
+  butuh_klarifikasi_tambahan
+}
+
+enum JenisTindakLanjut {
+  Rujukan_Rehabilitasi
+  Proses_Peradilan
+  Diversi_Restorative_Justice
+  Lainnya
+}
+
+enum StatusRujukan {
+  belum_kirim
+  terkirim
+  diterima_fasilitas
+  kapasitas_penuh
+  klien_mulai_layanan
+  batal_kendala
+  sedang_dikoordinasikan
+}
+
+enum StatusMonitoring {
+  menunggu_pelaksanaan
+  berjalan
+  terkendala
+  selesai
+  tidak_terlaksana
+}
+
+enum JenisLaporanKontrol {
+  Laporan_Kemajuan_Periodik
+  Laporan_Kunjungan_Kontrol
+  Laporan_Evaluasi_Klinis
+  Laporan_Wajib_Lapor
+  Laporan_Kejadian_Khusus
+  Laporan_Akhir_Layanan
+}
+
+enum StatusPelaksanaanBukti {
+  terlaksana
+  tidak_terlaksana
+  terlaksana_sebagian
+  tidak_terkonfirmasi
+}
+
+enum KanalWajibLapor {
+  langsung
+  surat
+  digital
+  melalui_pengaju
+}
+
+enum StatusKonfirmasiWajibLapor {
+  diajukan
+  dikonfirmasi_penyidik
+  belum_dikonfirmasi
+}
+
+enum StatusAkhirLayanan {
+  selesai_program
+  dipindahkan
+  berhenti_sebelum_selesai
+}
+
+enum StatusPelaksanaanRehab {
+  perlu_konfirmasi
+  koordinasi_berjalan
+  serah_terima_selesai
+  klien_mulai_layanan
+  terkendala_eskalasi
+}
+
+enum DimensiASAM {
+  intoksikasi
+  komplikasi_medis
+  kondisi_psikologis
+  kesiapan_berubah
+  potensi_kekambuhan
+  lingkungan_pemulihan
+}
+
+enum KlarifikasiStatus {
+  menunggu_tanggapan
+  selesai
+}
+
+enum JenisPengajuan {
+  penangkapan_tanpa_bb
+  penangkapan_dengan_bb
+  p19
+  penuntutan
+  persidangan
+}
+
+enum MetodePelaksanaan {
+  luring
+  daring
+  hybrid
+}
+
+// =====================================================================
+// USER & AUTHENTICATION
+// =====================================================================
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      UserRole
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Profile details
+  name       String
+  nip        String?  // NIP/NRP/ID Kedinasan
+  agency     String?  // Instansi
+  position   String?  // Jabatan
+  phone      String?
+  avatarUrl  String?
+
+  // Relations
+  permohonanList       PermohonanAsesmen[]  @relation("PengajuRelation")
+  asesmenMedis         AsesmenMedis[]
+  asesmenHukum         AsesmenHukum[]
+  timAsesmenSebagaiMedis  TimAsesmen[]     @relation("AsesorMedisRelation")
+  timAsesmenSebagaiHukum  TimAsesmen[]     @relation("AsesorHukumRelation")
+  timAsesmenSebagaiAdmin  TimAsesmen[]     @relation("SekretariatRelation")
+  registrasiterdaftar  RegistrasiPengguna[] @relation("ApprovedByRelation")
+  klarifikasiDari      Klarifikasi[]        @relation("KlarifikasiDariRelation")
+  auditLogs            AuditLog[]
+
+  @@map("users")
+}
+
+// Pendaftaran akun (khusus Pengaju; Admin/Medis/Hukum diundang)
+model RegistrasiPengguna {
+  id               String           @id @default(uuid())
+  nomorRegistrasi  String           @unique // REG-TAT/2026/POLRES-001
+  tanggalDaftar    DateTime         @default(now())
+  namaLengkap      String
+  pangkat          String?
+  nrp              String           // NRP / NIP
+  jabatan          String
+  instansi         String
+  kategoriInstansi KategoriInstansi
+  wilayahHukum     String
+  alamatKantor     String
+  email            String
+  phone            String
+  teleponKantor    String?
+
+  // Bukti dokumen
+  fotoKtpUrl          String?
+  fotoKtpName         String?
+  fotoKtaUrl          String?
+  fotoKtaName         String?
+  suratPenunjukanUrl  String?
+  suratPenunjukanName String?
+
+  // Status persetujuan
+  status        RegistrasiStatus @default(pending)
+  catatanAdmin  String?
+  approvedAt    DateTime?
+  approvedById  String?
+  approvedBy    User?            @relation("ApprovedByRelation", fields: [approvedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("registrasi_pengguna")
+}
+
+// =====================================================================
+// PERMOHONAN ASESMEN (Model Utama)
+// =====================================================================
+
+model PermohonanAsesmen {
+  id                String            @id @default(uuid())
+  trackingNumber    String?           @unique // Pre-registration tracking (publik)
+  nomorPermohonan   String            @unique // TAT/2026/09/089 (setelah APPROVED)
+  tanggalPengajuan  DateTime          @default(now())
+  revision          Int               @default(0)
+
+  jenisPengajuan      JenisPengajuan?
+  metodePelaksanaan   MetodePelaksanaan?
+  satuanKerjaTujuan   String?
+
+  // Status utama (4 kanonis)
+  applicationStatus ApplicationStatus @default(DRAFT)
+  medicalStatus     AssessmentStatus  @default(NOT_STARTED)
+  legalStatus       AssessmentStatus  @default(NOT_STARTED)
+  deliveryStatus    DeliveryStatus    @default(NOT_ISSUED)
+  followupStatus    FollowupStatus    @default(NOT_APPLICABLE_YET)
+
+  // SLA
+  tenggatSlaTanggal    DateTime?
+  isMendekatiTenggat   Boolean   @default(false)
+  isMelewatiTenggat    Boolean   @default(false)
+
+  // Pengaju
+  pengajuId        String
+  pengaju          User      @relation("PengajuRelation", fields: [pengajuId], references: [id])
+  instansiPengaju  String
+
+  // Relasi ke sub-model
+  terperiksa                Terperiksa?
+  perkara                   PerkaraHukum?
+  dokumenList               DokumenPersyaratan[]
+  timAsesmen                TimAsesmen?
+  asesmenMedis              AsesmenMedis?
+  asesmenHukum              AsesmenHukum?
+  sidangPleno               SidangPleno?
+  rekomendasiResmi          RekomendasiResmi?
+  tindakLanjutLayanan       TindakLanjutLayanan?
+  monitoringTindakLanjut    MonitoringTindakLanjut?
+  instrumenKriteriaPlasemen InstrumenKriteriaPlasemen?
+  klarifikasiList           Klarifikasi[]
+  auditLogs                 AuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("permohonan_asesmen")
+}
+
+// =====================================================================
+// TERPERIKSA
+// =====================================================================
+
+model Terperiksa {
+  id                    String   @id @default(uuid())
+  permohonanId          String   @unique
+  permohonan            PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  namaLengkap           String
+  alias                 String?
+  nik                   String?
+  isNikVerified         Boolean  @default(false)
+  statusIdentitasKhusus String?
+
+  tempatLahir           String
+  tanggalLahir          DateTime
+  usia                  Int
+  jenisKelamin          String   // Laki-laki | Perempuan
+  pekerjaan             String?
+  alamatKtp             String
+  alamatDomisili        String?
+  namaWaliPendamping    String?
+  kontakWali            String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("terperiksa")
+}
+
+// =====================================================================
+// PERKARA HUKUM
+// =====================================================================
+
+model PerkaraHukum {
+  id           String   @id @default(uuid())
+  permohonanId String   @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  nomorLaporanPolisi     String
+  tanggalLp              DateTime
+  instansiPenyidik       String
+  namaPenyidik           String
+  nomorHpPenyidik        String
+  pasalDipersangkakan    String
+  tempatKejadianPerkara  String
+  tanggalWaktuPenangkapan DateTime?
+  kronologiSingkat       String
+
+  barangBuktiList BarangBukti[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("perkara_hukum")
+}
+
+// =====================================================================
+// BARANG BUKTI
+// =====================================================================
+
+model BarangBukti {
+  id             String       @id @default(uuid())
+  perkaraHukumId String
+  perkaraHukum   PerkaraHukum @relation(fields: [perkaraHukumId], references: [id], onDelete: Cascade)
+
+  jenisZat           String
+  beratKotorGram     Float?
+  beratBersihGram    Float
+  statusUjiLab       StatusUjiLab @default(belum_uji)
+  nomorSuratLab      String?
+  tanggalSuratLab    DateTime?
+  keterangan         String?
+  fotoBarangBuktiUrl String?
+  fotoUjiLabUrl      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("barang_bukti")
+}
+
+// =====================================================================
+// DOKUMEN PERSYARATAN
+// =====================================================================
+
+model DokumenPersyaratan {
+  id           String   @id @default(uuid())
+  permohonanId String
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  nama              String
+  kode              String?
+  wajib             Boolean  @default(true)
+  keterangan        String?
+  fileUrl           String?
+  fileName          String?
+  fileSize          String?
+  uploadedAt        DateTime?
+  statusVerifikasi  StatusVerifikasiDokumen @default(belum_diunggah)
+  catatanKoreksi    String?
+  versi             Int      @default(1)
+
+  // Riwayat versi dokumen (immutable versioning)
+  parentId          String?
+  parent            DokumenPersyaratan?  @relation("DokumenVersioning", fields: [parentId], references: [id])
+  revisions         DokumenPersyaratan[] @relation("DokumenVersioning")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("dokumen_persyaratan")
+}
+
+// =====================================================================
+// TIM ASESMEN (Penugasan)
+// =====================================================================
+
+model TimAsesmen {
+  id           String   @id @default(uuid())
+  permohonanId String   @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  sekretariatId   String?
+  sekretariat     User?    @relation("SekretariatRelation", fields: [sekretariatId], references: [id])
+  sekretariatNama String?
+
+  asesorMedisId   String?
+  asesorMedis     User?    @relation("AsesorMedisRelation", fields: [asesorMedisId], references: [id])
+  asesorMedisNama String?
+
+  asesorHukumId   String?
+  asesorHukum     User?    @relation("AsesorHukumRelation", fields: [asesorHukumId], references: [id])
+  asesorHukumNama String?
+
+  jadwalPemeriksaanMedis  DateTime?
+  jadwalPemeriksaanHukum  DateTime?
+  jadwalPleno             DateTime?
+  lokasiPemeriksaan       String?
+
+  // Disposisi ketua
+  disposisiHasil           String?
+  disposisiAlasan          String?
+  disposisiTanggal         DateTime?
+  disposisiKetua           String?
+  disposisiJabatan         String?
+  disposisiBuktiUrl        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tim_asesmen")
+}
+
+// =====================================================================
+// ASESMEN MEDIS
+// =====================================================================
+
+model AsesmenMedis {
+  id           String   @id @default(uuid())
+  permohonanId String   @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  asesorId    String
+  asesor      User     @relation(fields: [asesorId], references: [id])
+  asesorNama  String
+  tanggalPemeriksaan DateTime @default(now())
+  status      AssessmentStatus @default(DRAFT)
+
+  // Riwayat zat (one-to-many)
+  riwayatZat  RiwayatZat[]
+
+  // Pemeriksaan fisik
+  kondisiFisik           String?
+  tekananDarah           String?
+  denyutNadi             String?
+  tandaBekasSuntikan     Boolean  @default(false)
+  komorbiditasMedis      String?
+  kondisiPsikologis      String?
+
+  // Hasil urin (one-to-many)
+  hasilUrin    HasilUrin[]
+
+  // Instrumen
+  instrumen               String   @default("ASSIST") // ASSIST | ASI
+  skorInstrumen           Float?
+  tingkatRisikoInstrumen  String?
+
+  // Kesimpulan
+  diagnosisKlinisIcd         String?
+  interpretasiKlinis         String?
+  kebutuhanRawat             String?
+  durasiUsulanBulan          Int?
+  catatanKhusus              String?
+  permintaanPemeriksaanTambahan String?
+
+  // Instrumen kriteria plasemen
+  instrumenKriteriaPlasemen  InstrumenKriteriaPlasemen?
+
+  // Finalisasi & amandemen
+  finalizedAt  DateTime?
+  finalizedBy  String?
+  amendmentNote String?
+
+  terakhirDiperbarui DateTime @updatedAt
+
+  @@map("asesmen_medis")
+}
+
+model RiwayatZat {
+  id             String       @id @default(uuid())
+  asesmenMedisId String
+  asesmenMedis   AsesmenMedis @relation(fields: [asesmenMedisId], references: [id], onDelete: Cascade)
+
+  jenisZat             String
+  caraPakai            String   // Hisap, Telan, Suntik
+  frekuensi            String
+  lamaPemakaianBulan   Int
+  terakhirPakai        String?
+
+  @@map("riwayat_zat")
+}
+
+model HasilUrin {
+  id             String       @id @default(uuid())
+  asesmenMedisId String
+  asesmenMedis   AsesmenMedis @relation(fields: [asesmenMedisId], references: [id], onDelete: Cascade)
+
+  parameter String // AMP, MET, THC, BZO, MOP
+  hasil     String // Positif | Negatif
+
+  @@map("hasil_urin")
+}
+
+// =====================================================================
+// INSTRUMEN KRITERIA PLASEMEN (ASAM 6 Dimensi)
+// =====================================================================
+
+model InstrumenKriteriaPlasemen {
+  id             String       @id @default(uuid())
+  asesmenMedisId String       @unique
+  asesmenMedis   AsesmenMedis @relation(fields: [asesmenMedisId], references: [id], onDelete: Cascade)
+
+  permohonanId   String       @unique
+  permohonan     PermohonanAsesmen @relation(fields: [permohonanId], references: [id])
+
+  tanggalPengisian             DateTime @default(now())
+  petugasNama                  String
+  petugasInstansi              String
+  wawancaraTambahanDilakukan   Boolean  @default(false)
+  catatanWawancara             String?
+
+  penilaianPerDimensi PenilaianDimensiASAM[]
+
+  // Hasil akhir
+  levelRekomendasiAkhir    Int      // 0-4
+  justifikasiRekomendasi   String?
+  adaDisparitasDimensi     Boolean  @default(false)
+  catatanDisparitas        String?
+
+  statusPengisian String   @default("draf") // draf | lengkap | divalidasi
+  validasiOleh    String?
+  tanggalValidasi DateTime?
+
+  @@map("instrumen_kriteria_plasemen")
+}
+
+model PenilaianDimensiASAM {
+  id           String   @id @default(uuid())
+  instrumenId  String
+  instrumen    InstrumenKriteriaPlasemen @relation(fields: [instrumenId], references: [id], onDelete: Cascade)
+
+  dimensi               DimensiASAM
+  levelDipilih          Int          // 0-4
+  catatanKlinis         String?
+  indikatorTerpilih     String[]     // JSON array of strings
+
+  @@map("penilaian_dimensi_asam")
+}
+
+// =====================================================================
+// ASESMEN HUKUM
+// =====================================================================
+
+model AsesmenHukum {
+  id           String   @id @default(uuid())
+  permohonanId String   @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  asesorId    String
+  asesor      User     @relation(fields: [asesorId], references: [id])
+  asesorNama  String
+  tanggalTelaah DateTime @default(now())
+  status        AssessmentStatus @default(DRAFT)
+
+  // Riwayat residivisme
+  pernahDitangkap         Boolean  @default(false)
+  keteranganPerkaraLalu   String?
+  terverifikasiDatabase   Boolean  @default(false)
+
+  // Analisis
+  analisisPeran       AnalisisPeran @default(Belum_Dapat_Disimpulkan)
+  argumentasiPeran    String?
+  faktaPendukung      String[]     // JSON array
+  catatanBelumTerverifikasi String?
+  analisisBarangBukti String?
+
+  // Kesimpulan
+  kesimpulanHukum     String?
+  rekomendasiHukum    RekomendasiHukum?
+  catatanKlarifikasi  String?
+
+  // Finalisasi & amandemen
+  finalizedAt    DateTime?
+  finalizedBy    String?
+  amendmentNote  String?
+
+  terakhirDiperbarui DateTime @updatedAt
+
+  @@map("asesmen_hukum")
+}
+
+// =====================================================================
+// SIDANG PLENO TAT
+// =====================================================================
+
+model SidangPleno {
+  id           String   @id @default(uuid())
+  permohonanId String   @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  tanggalPleno      DateTime
+  waktu             String?
+  tempat            String?
+  nomorBeritaAcara  String?
+  pimpinanPleno     String?
+
+  daftarHadir DaftarHadirPleno[]
+
+  pokokBahasan               String?
+  catatanPerbedaanPendapat   String?
+  kesepakatanRekomendasi     String?
+  jenisRekomendasiFinal      JenisRekomendasiFinal?
+  durasiRehabBulan           Int?
+  fasilitasRujukanUsulan     String?
+  statusPleno                StatusPleno @default(terjadwal)
+  fileBeritaAcaraSigned      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sidang_pleno")
+}
+
+model DaftarHadirPleno {
+  id            String      @id @default(uuid())
+  sidangPlenoId String
+  sidangPleno   SidangPleno @relation(fields: [sidangPlenoId], references: [id], onDelete: Cascade)
+
+  nama     String
+  peran    String
+  instansi String
+  hadir    Boolean @default(false)
+
+  @@map("daftar_hadir_pleno")
+}
+
+// =====================================================================
+// REKOMENDASI RESMI
+// =====================================================================
+
+model RekomendasiResmi {
+  id           String   @id @default(uuid())
+  permohonanId String   @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  nomorSurat             String    @unique
+  tanggalTerbit          DateTime?
+  dibuatOleh             String?
+  ringkasanMedis         String?
+  ringkasanHukum         String?
+  rekomendasiFinalText   String?
+
+  daftarPengesah         PengesahDokumen[]
+
+  isLengkapPengesahan    Boolean   @default(false)
+  qrVerificationCode     String?   @unique
+  filePdfUrl             String?
+
+  // Bukti penerimaan pengaju
+  buktPenerimaanDiterimaOleh    String?
+  buktiPenerimaanTanggal        DateTime?
+  buktiPenerimaanNomorTandaTerima String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("rekomendasi_resmi")
+}
+
+model PengesahDokumen {
+  id               String          @id @default(uuid())
+  rekomendasiId    String
+  rekomendasi      RekomendasiResmi @relation(fields: [rekomendasiId], references: [id], onDelete: Cascade)
+
+  nama                   String
+  jabatan                String
+  instansi               String
+  status                 StatusPengesah @default(menunggu)
+  tanggalPengesahan      DateTime?
+  catatanKoreksi         String?
+  tandaTanganDigitalHash String?
+
+  @@map("pengesah_dokumen")
+}
+
+// =====================================================================
+// TINDAK LANJUT LAYANAN
+// =====================================================================
+
+model TindakLanjutLayanan {
+  id           String   @id @default(uuid())
+  permohonanId String   @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  jenisTindakLanjut   JenisTindakLanjut
+  namaFasilitasTujuan String?
+  kontakFasilitas     String?
+  statusRujukan       StatusRujukan @default(belum_kirim)
+
+  tanggalRujukanDikirim     DateTime?
+  tanggalKonfirmasiFasilitas DateTime?
+  tanggalMulaiLayanan        DateTime?
+  hambatanPelaksanaan        String?
+  penanggungJawabTindakLanjut String?
+  buktiPelaksanaanUrl         String?
+  statusProsesHukumTerkait    String?
+
+  terakhirDiperbarui DateTime @updatedAt
+
+  @@map("tindak_lanjut_layanan")
+}
+
+// =====================================================================
+// MONITORING TINDAK LANJUT REHABILITASI
+// =====================================================================
+
+model MonitoringTindakLanjut {
+  id           String   @id @default(uuid())
+  permohonanId String   @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  nomorRekomendasi   String?
+  statusMonitoring   StatusMonitoring @default(menunggu_pelaksanaan)
+
+  pelaksanaanRehab    PelaksanaanRehab?
+  laporanKontrolList  LaporanKontrol[]
+  buktiWajibLaporList BuktiWajibLapor[]
+  akhirLayanan        AkhirLayananRehab?
+
+  dibuatOleh         String?
+  tanggalDibuat      DateTime @default(now())
+  terakhirDiperbarui DateTime @updatedAt
+
+  @@map("monitoring_tindak_lanjut")
+}
+
+model PelaksanaanRehab {
+  id               String                 @id @default(uuid())
+  monitoringId     String                 @unique
+  monitoring       MonitoringTindakLanjut @relation(fields: [monitoringId], references: [id], onDelete: Cascade)
+
+  nomorRekomendasiTAT           String?
+  jenisLayananSesuaiRekomendasi String?
+  namaFasilitasTujuan           String?
+  alamatFasilitas               String?
+  kontakPenanggungJawabFasilitas String?
+  namaPenanggungJawabFasilitas  String?
+
+  tanggalKoordinasiPenerimaan   DateTime?
+  hasilKoordinasiPenerimaan     String?
+  catatanKoordinasi             String?
+
+  tanggalSerahTerimaAktual      DateTime?
+  identitasPihakMenyerahkan     String?
+  identitasPihakMenerima        String?
+  fileBaSerahTerimaUrl          String?
+
+  tanggalMasukLayananTerkonfirmasi DateTime?
+
+  adaKendala                    Boolean  @default(false)
+  kendala                       String?
+  perbedaanDariRekomendasi      String?
+
+  statusPelaksanaan             StatusPelaksanaanRehab @default(perlu_konfirmasi)
+  diisiOleh                     String?
+  kapasitasPengisi              String?
+  tanggalDiisi                  DateTime?
+
+  statusVerifikasiAdmin         String?
+  catatanVerifikasiAdmin        String?
+  tanggalVerifikasiAdmin        DateTime?
+  diverifikasiOleh              String?
+
+  @@map("pelaksanaan_rehab")
+}
+
+model LaporanKontrol {
+  id           String                 @id @default(uuid())
+  monitoringId String
+  monitoring   MonitoringTindakLanjut @relation(fields: [monitoringId], references: [id], onDelete: Cascade)
+
+  jenisLaporan                    JenisLaporanKontrol
+  tanggalKegiatanSebenarnya       DateTime
+  namaFasilitasPelapor            String?
+  nomorLaporanFasilitas           String?
+  tanggalLaporanFasilitas         DateTime?
+  namaPenerbitLaporan             String?
+  kapasitasPenerbit               String?
+
+  statusPelaksanaanBerdasarkanBukti StatusPelaksanaanBukti @default(tidak_terkonfirmasi)
+  ringkasanAdministratif          String?
+  catatanKendala                  String?
+  rencanaBerdasarkanLaporan       String?
+  fileBuktiUrl                    String?
+
+  diunggahOleh                    String?
+  kapasitasPengunggah             String?
+  tanggalDiunggah                 DateTime @default(now())
+
+  statusAdmin                     String?
+  catatanAdmin                    String?
+  diverifikasiOleh                String?
+  tanggalVerifikasi               DateTime?
+
+  perluTelaahKlinis               Boolean?
+  statusTelaahKlinis              String?
+  penugasanMedis                  String?
+  catatanTelaahKlinis             String?
+  tanggalTelaahKlinis             DateTime?
+
+  @@map("laporan_kontrol")
+}
+
+model BuktiWajibLapor {
+  id           String                 @id @default(uuid())
+  monitoringId String
+  monitoring   MonitoringTindakLanjut @relation(fields: [monitoringId], references: [id], onDelete: Cascade)
+
+  tanggalRencanaWajibLapor    DateTime?
+  tanggalPelaporanAktual      DateTime?
+  tanggalWajibLapor           DateTime
+  waktuInputSistem            DateTime?
+  namaPenyidikPenerima        String?
+  instansiPenyidik            String?
+  kegiatanRehabTerkait        String?
+  kanal                       KanalWajibLapor @default(langsung)
+  buktiPenerimaanUrl          String?
+  catatanKendala              String?
+  statusKonfirmasi            StatusKonfirmasiWajibLapor @default(diajukan)
+
+  statusVerifikasiAdmin       String?
+  catatanAdmin                String?
+  diunggahOleh                String?
+  tanggalDiunggah             DateTime @default(now())
+
+  @@map("bukti_wajib_lapor")
+}
+
+model AkhirLayananRehab {
+  id           String                 @id @default(uuid())
+  monitoringId String                 @unique
+  monitoring   MonitoringTindakLanjut @relation(fields: [monitoringId], references: [id], onDelete: Cascade)
+
+  tanggalAkhirLayananAktual     DateTime
+  hasilSesuaiDokumenFasilitas   String?
+  statusAkhir                   StatusAkhirLayanan
+  namaFasilitas                 String?
+  pihakPenerbitKeterangan       String?
+  fileSuratAkhirLayananUrl      String?
+  rencanaLanjutanDariFasilitas  String?
+  fasilitasPascarehabJikaAda    String?
+  jadwalLanjutanBerdasarkanRencana String?
+  buktiWajibLaporPascaRawatInap String?
+
+  diisiOleh                     String?
+  kapasitasPengisi              String?
+  tanggalDiisi                  DateTime @default(now())
+
+  statusVerifikasiAdmin         String?
+  diverifikasiOleh              String?
+  catatanVerifikasiAdmin        String?
+
+  @@map("akhir_layanan_rehab")
+}
+
+// =====================================================================
+// KLARIFIKASI
+// =====================================================================
+
+model Klarifikasi {
+  id           String   @id @default(uuid())
+  permohonanId String
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  dariUserId   String
+  dariUser     User     @relation("KlarifikasiDariRelation", fields: [dariUserId], references: [id])
+  dariNama     String
+  dariPeran    UserRole
+  kepadaPeran  UserRole
+  pertanyaan   String
+  lampiran     String?
+  tanggalTanya DateTime @default(now())
+
+  jawaban      String?
+  dijawabOleh  String?
+  tanggalJawab DateTime?
+  status       KlarifikasiStatus @default(menunggu_tanggapan)
+
+  @@map("klarifikasi")
+}
+
+// =====================================================================
+// AUDIT LOG (Immutable)
+// =====================================================================
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  timestamp    DateTime @default(now())
+
+  actorId      String?
+  actor        User?    @relation(fields: [actorId], references: [id])
+  actorNama    String
+  actorPeran   String
+
+  permohonanId String?
+  permohonan   PermohonanAsesmen? @relation(fields: [permohonanId], references: [id])
+
+  aksi         String   // e.g., "SUBMIT_PERMOHONAN", "APPROVE_AKUN", "FINALISASI_MEDIS"
+  rincian      String   // Detail aksi
+  ipAddress    String?
+  userAgent    String?
+
+  @@map("audit_log")
+}
