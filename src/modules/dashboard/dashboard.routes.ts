@@ -7,16 +7,32 @@ const router = Router();
 router.use(authMiddleware);
 
 /**
- * @route   GET /api/dashboard/summary
- * @desc    Mengambil metrik ringkasan dashboard sesuai role yang sedang login
- * @access  Semua role terautentikasi
+ * @openapi
+ * /api/dashboard/summary:
+ *   get:
+ *     tags:
+ *       - Dashboard & Analytics
+ *     summary: Ambil ringkasan statistik KPI & SLA dashboard sesuai role
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Data ringkasan dashboard berhasil dimuat
  */
 router.get('/summary', getDashboardSummary);
 
 /**
- * @route   GET /api/dashboard/analytics
- * @desc    Mengambil data grafik dan agregasi sistem
- * @access  Semua role terautentikasi
+ * @openapi
+ * /api/dashboard/analytics:
+ *   get:
+ *     tags:
+ *       - Dashboard & Analytics
+ *     summary: Ambil data analitik tren kasus dan efisiensi waktu SLA
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Data analitik berhasil dimuat
  */
 router.get('/analytics', getAnalytics);
 

@@ -86,8 +86,8 @@ async function main() {
         satuanKerjaTujuan: 'BNNP DKI Jakarta',
         pengajuId: pengajuUser.id,
         instansiPengaju: pengajuUser.agency || 'Satresnarkoba',
-        applicationStatus: ApplicationStatus.IN_ASSESSMENT,
-        medicalStatus: AssessmentStatus.IN_PROGRESS,
+        applicationStatus: ApplicationStatus.ASSESSMENT_ACTIVE,
+        medicalStatus: AssessmentStatus.DRAFT,
         legalStatus: AssessmentStatus.NOT_STARTED,
         tenggatSlaTanggal: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // 6 hari ke depan (SLA 6 hari)
         isMendekatiTenggat: false,
@@ -150,7 +150,7 @@ async function main() {
           create: {
             asesorId: medisUser.id,
             asesorNama: medisUser.name,
-            status: AssessmentStatus.IN_PROGRESS,
+            status: AssessmentStatus.DRAFT,
             kondisiFisik: 'Baik, kesadaran compos mentis, tidak ditemukan luka traumatis akut',
             tekananDarah: '120/80 mmHg',
             denyutNadi: '82 bpm',
@@ -190,10 +190,10 @@ async function main() {
           create: {
             asesorId: hukumUser.id,
             asesorNama: hukumUser.name,
-            status: AssessmentStatus.IN_PROGRESS,
+            status: AssessmentStatus.DRAFT,
             pernahDitangkap: false,
             terverifikasiDatabase: true,
-            analisisPeran: 'Pecandu_Penyalahguna',
+            analisisPeran: 'Penyalahguna_Murni',
             argumentasiPeran:
               'Barang bukti di bawah 1 gram (0.28 gram), tidak ditemukan alat timbangan digital atau uang hasil penjualan, tidak terindikasi jaringan pengedar.',
             faktaPendukung: [
@@ -202,7 +202,7 @@ async function main() {
               'Tidak ditemukan catatan kriminalitas sebelumnya (residivisme negatif)',
             ],
             kesimpulanHukum: 'Memenuhi kriteria penyalahguna narkotika murni untuk diri sendiri',
-            rekomendasiHukum: 'Lanjut_Peradilan_Rehab',
+            rekomendasiHukum: 'Proses_Hukum_Dilanjutkan_dengan_Rehabilitasi',
           },
         },
       },

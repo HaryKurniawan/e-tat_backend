@@ -3,7 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
+import swaggerUi from 'swagger-ui-express';
 import { env } from './config/env';
+import { swaggerSpec } from './config/swagger';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 
 // Import route modules
@@ -22,7 +24,11 @@ import auditRoutes from './modules/audit/audit.routes';
 const app: Application = express();
 
 // Security Middlewares
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Memastikan Swagger UI dapat memuat stylesheet dan assets tanpa diblokir CSP
+  })
+);
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -57,6 +63,25 @@ app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 // Static uploads folder
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
+// Swagger Documentation UI & OpenAPI Spec
+app.get('/api-docs.json', (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: 'POLRI E-TAT API Documentation (Swagger)',
+    customCss: '.swagger-ui .topbar { background-color: #0b172a; border-bottom: 2px solid #D4AF37; }',
+    swaggerOptions: {
+      persistAuthorization: true,
+      displayRequestDuration: true,
+    },
+  })
+);
+app.use('/docs', (req: Request, res: Response) => res.redirect('/api-docs'));
+
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({
@@ -65,6 +90,7 @@ app.get('/api/health', (req: Request, res: Response) => {
     service: 'POLRI E-TAT Backend API',
     version: '1.0.0',
     environment: env.NODE_ENV,
+    docsUrl: `http://localhost:${env.PORT}/api-docs`,
   });
 });
 
