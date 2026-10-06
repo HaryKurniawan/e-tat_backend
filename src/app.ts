@@ -83,15 +83,24 @@ app.use(
 );
 app.use('/docs', (req: Request, res: Response) => res.redirect('/api-docs'));
 
-// Health check endpoint
-app.get('/api/health', (req: Request, res: Response) => {
+// Root & Health check endpoints
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'OK',
+    service: 'POLRI E-TAT Backend API',
+    version: '1.0.0',
+    docs: '/api-docs',
+    health: '/api/health',
+  });
+});
+
+app.get(['/api/health', '/health'], (req: Request, res: Response) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     service: 'POLRI E-TAT Backend API',
     version: '1.0.0',
     environment: env.NODE_ENV,
-    docsUrl: `http://localhost:${env.PORT}/api-docs`,
   });
 });
 
