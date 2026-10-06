@@ -163,7 +163,14 @@ Tersedia alur verifikasi berkas, asesmen medis & kriteria plasemen (ASAM Criteri
       { name: 'Audit Trail', description: 'Catatan Log Aktivitas Sistem (Immutable Audit Log)' },
     ],
   },
-  apis: ['./src/modules/**/*.routes.ts', './src/app.ts'],
+  apis: ['./src/modules/**/*.routes.ts', './src/app.ts', './dist/src/modules/**/*.routes.js'],
 };
 
-export const swaggerSpec = swaggerJsdoc(swaggerOptions);
+let spec: any = swaggerOptions.definition;
+try {
+  spec = swaggerJsdoc(swaggerOptions);
+} catch (err) {
+  console.warn('⚠️ Swagger generation skipped in serverless environment');
+}
+
+export const swaggerSpec = spec;

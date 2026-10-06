@@ -3,16 +3,24 @@ import path from 'path';
 import fs from 'fs';
 import { Request } from 'express';
 
-// Ensure upload directories exist
-const uploadBaseDir = path.join(process.cwd(), 'uploads');
+// Ensure upload directories exist (support serverless /tmp directory)
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+export const uploadBaseDir = isServerless
+  ? path.join('/tmp', 'uploads')
+  : path.join(process.cwd(), 'uploads');
+
 const directories = ['dokumen', 'ktp', 'kta', 'rekomendasi', 'bukti', 'berita_acara'];
 
-directories.forEach((dir) => {
-  const fullPath = path.join(uploadBaseDir, dir);
-  if (!fs.existsSync(fullPath)) {
-    fs.mkdirSync(fullPath, { recursive: true });
-  }
-});
+try {
+  directories.forEach((dir) => {
+    const fullPath = path.join(uploadBaseDir, dir);
+    if (!fs.existsSync(fullPath)) {
+      fs.mkdirSync(fullPath, { recursive: true });
+    }
+  });
+} catch (err: any) {
+  console.warn('⚠️ Upload directory initialization warning:', err.message);
+}
 
 const storage = multer.diskStorage({
   destination: (req: Request, file: Express.Multer.File, cb) => {
