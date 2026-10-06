@@ -4,7 +4,6 @@
     "module": "CommonJS",
     "lib": ["ES2022"],
     "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -19,6 +18,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*", "src/types/**/*.d.ts"],
+  "include": ["src/**/*", "api/**/*", "src/types/**/*.d.ts"],
   "exclude": ["node_modules", "dist", "prisma"]
 }
