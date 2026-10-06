@@ -65,23 +65,27 @@ app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Swagger Documentation UI & OpenAPI Spec
-app.get('/api-docs.json', (req: Request, res: Response) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
-});
-app.use(
-  '/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customSiteTitle: 'POLRI E-TAT API Documentation (Swagger)',
-    customCss: '.swagger-ui .topbar { background-color: #0b172a; border-bottom: 2px solid #D4AF37; }',
-    swaggerOptions: {
-      persistAuthorization: true,
-      displayRequestDuration: true,
-    },
-  })
-);
-app.use('/docs', (req: Request, res: Response) => res.redirect('/api-docs'));
+try {
+  app.get('/api-docs.json', (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+  });
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, {
+      customSiteTitle: 'POLRI E-TAT API Documentation (Swagger)',
+      customCss: '.swagger-ui .topbar { background-color: #0b172a; border-bottom: 2px solid #D4AF37; }',
+      swaggerOptions: {
+        persistAuthorization: true,
+        displayRequestDuration: true,
+      },
+    })
+  );
+  app.use('/docs', (req: Request, res: Response) => res.redirect('/api-docs'));
+} catch (e) {
+  console.warn('⚠️ Swagger UI failed to initialize:', e);
+}
 
 // Root & Health check endpoints
 app.get('/', (req: Request, res: Response) => {
