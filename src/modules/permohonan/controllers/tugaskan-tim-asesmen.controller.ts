@@ -4,6 +4,7 @@ import { sendSuccess, sendNotFound } from '../../../utils/response.util';
 import { penugasanSchema } from '../permohonan.schema';
 import { getParam } from '../../../utils/param.util';
 import { logAudit } from '../../../utils/audit.util';
+import { sendPenugasanHukumEmail } from '../../../services/email.service';
 
 /**
  * POST /api/permohonan/:id/tugaskan
@@ -66,8 +67,41 @@ export const tugaskanTimAsesmen = async (
 
     const updated = await prisma.permohonanAsesmen.findUnique({
       where: { id },
-      include: { timAsesmen: true },
+      include: {
+        timAsesmen: {
+          include: {
+            asesorHukum: true,
+            asesorMedis: true,
+          },
+        },
+        terperiksa: true,
+        perkara: {
+          include: {
+            barangBuktiList: true,
+          },
+        },
+      },
     });
+
+    // Kirim notifikasi email ke Asesor Hukum secara asynchronous (non-blocking)
+    if (updated && updated.timAsesmen?.asesorHukum?.email && updated.terperiksa) {
+      const asesorHukum = updated.timAsesmen.asesorHukum;
+      sendPenugasanHukumEmail({
+        asesorEmail: asesorHukum.email,
+        asesorNama: asesorHukum.name,
+        nomorPermohonan: updated.nomorPermohonan,
+        trackingNumber: updated.trackingNumber,
+        jadwalPemeriksaanHukum: updated.timAsesmen.jadwalPemeriksaanHukum,
+        jadwalPleno: updated.timAsesmen.jadwalPleno,
+        lokasiPemeriksaan: updated.timAsesmen.lokasiPemeriksaan,
+        sekretariatNama: req.user!.name,
+        terperiksa: updated.terperiksa,
+        perkara: updated.perkara,
+      }).catch((err) => {
+        console.error('❌ Gagal mengirim notifikasi email penugasan hukum:', err);
+      });
+    }
+
     sendSuccess(res, updated, 'Tim asesmen berhasil ditugaskan');
   } catch (err) {
     next(err);

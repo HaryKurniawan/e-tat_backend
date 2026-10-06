@@ -41,17 +41,18 @@ export const getPermohonanList = async (
         take: limit,
         orderBy: { tanggalPengajuan: 'desc' },
         include: {
-          pengaju: { select: { id: true, name: true, agency: true } },
-          terperiksa: { select: { namaLengkap: true, nik: true } },
-          perkara: { select: { nomorLaporanPolisi: true, pasalDipersangkakan: true } },
-          timAsesmen: {
-            select: {
-              asesorMedisNama: true,
-              asesorHukumNama: true,
-              jadwalPemeriksaanMedis: true,
-              jadwalPleno: true,
+          pengaju: { select: { id: true, name: true, agency: true, nip: true, phone: true } },
+          terperiksa: true,
+          perkara: {
+            include: {
+              barangBuktiList: true,
             },
           },
+          timAsesmen: true,
+          dokumenList: true,
+          sidangPleno: true,
+          rekomendasiResmi: true,
+          tindakLanjutLayanan: true,
         },
       }),
       prisma.permohonanAsesmen.count({ where }),

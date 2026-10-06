@@ -1,5 +1,6 @@
 import { PrismaClient, UserRole, ApplicationStatus, AssessmentStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import process from 'node:process';
 
 const prisma = new PrismaClient();
 
@@ -8,10 +9,10 @@ async function main() {
 
   const passwordHash = await bcrypt.hash('password123', 12);
 
-  // 1. Seed 4 Canonical Role Users
+  // 1. Seed 4 Canonical Role Users (All with password: password123)
   const adminUser = await prisma.user.upsert({
     where: { email: 'sekretariat@polri.go.id' },
-    update: {},
+    update: { password: passwordHash },
     create: {
       email: 'sekretariat@polri.go.id',
       password: passwordHash,
@@ -23,11 +24,11 @@ async function main() {
       phone: '081234567890',
     },
   });
-  console.log('✔ User Sekretariat (Admin) created:', adminUser.email);
+  console.log('✔ User Sekretariat (Admin) created/updated (password: password123):', adminUser.email);
 
   const pengajuUser = await prisma.user.upsert({
     where: { email: 'penyidik@polres.go.id' },
-    update: {},
+    update: { password: passwordHash },
     create: {
       email: 'penyidik@polres.go.id',
       password: passwordHash,
@@ -39,11 +40,11 @@ async function main() {
       phone: '081298765432',
     },
   });
-  console.log('✔ User Pengaju (Penyidik) created:', pengajuUser.email);
+  console.log('✔ User Pengaju (Penyidik) created/updated (password: password123):', pengajuUser.email);
 
   const medisUser = await prisma.user.upsert({
     where: { email: 'medis@tat.go.id' },
-    update: {},
+    update: { password: passwordHash },
     create: {
       email: 'medis@tat.go.id',
       password: passwordHash,
@@ -55,11 +56,11 @@ async function main() {
       phone: '081311223344',
     },
   });
-  console.log('✔ User Asesor Medis created:', medisUser.email);
+  console.log('✔ User Asesor Medis created/updated (password: password123):', medisUser.email);
 
   const hukumUser = await prisma.user.upsert({
     where: { email: 'hukum@tat.go.id' },
-    update: {},
+    update: { password: passwordHash },
     create: {
       email: 'hukum@tat.go.id',
       password: passwordHash,
@@ -71,7 +72,7 @@ async function main() {
       phone: '081399887766',
     },
   });
-  console.log('✔ User Asesor Hukum created:', hukumUser.email);
+  console.log('✔ User Asesor Hukum created/updated (password: password123):', hukumUser.email);
 
   // 2. Seed Sample Permohonan Asesmen
   const existingPermohonan = await prisma.permohonanAsesmen.findFirst({

@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { login, refresh, logout, getMe } from './auth.controller';
+import { login, refresh, logout, getMe, createUser, getAllUsers } from './auth.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
+import { guardAdmin } from '../../middleware/role.middleware';
 
 const router = Router();
 
@@ -94,5 +95,59 @@ router.post('/logout', authMiddleware, logout);
  *         description: Tidak terotentikasi
  */
 router.get('/me', authMiddleware, getMe);
+
+/**
+ * @openapi
+ * /api/auth/users:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: Ambil daftar seluruh pengguna aktif
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Daftar pengguna berhasil dimuat
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Buat akun pengguna baru (Admin Only)
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - role
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [PENGAJU, ADMIN, MEDIS, HUKUM]
+ *               nip:
+ *                 type: string
+ *               agency:
+ *                 type: string
+ *               position:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Pengguna baru berhasil dibuat
+ */
+router.get('/users', authMiddleware, getAllUsers);
+router.post('/users', authMiddleware, guardAdmin, createUser);
 
 export default router;
