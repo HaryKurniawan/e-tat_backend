@@ -50,6 +50,13 @@ export const getPermohonanList = async (
           },
           timAsesmen: true,
           dokumenList: true,
+          asesmenMedis: {
+            include: {
+              riwayatZat: true,
+              hasilUrin: true,
+            },
+          },
+          asesmenHukum: true,
           sidangPleno: true,
           rekomendasiResmi: true,
           tindakLanjutLayanan: true,
