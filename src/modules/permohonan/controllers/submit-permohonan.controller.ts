@@ -4,6 +4,7 @@ import { sendSuccess, sendError, sendNotFound, sendForbidden } from '../../../ut
 import { generateNomorPermohonan } from '../../../utils/nomor.util';
 import { getParam } from '../../../utils/param.util';
 import { logAudit } from '../../../utils/audit.util';
+import { sendNotifikasiPermohonanBaruEmail } from '../../../services/email.service';
 
 /**
  * POST /api/permohonan/:id/submit
@@ -17,7 +18,10 @@ export const submitPermohonan = async (
   try {
     const id = getParam(req, 'id');
 
-    const permohonan = await prisma.permohonanAsesmen.findUnique({ where: { id } });
+    const permohonan = await prisma.permohonanAsesmen.findUnique({
+      where: { id },
+      include: { terperiksa: true, perkara: true },
+    });
     if (!permohonan) {
       sendNotFound(res);
       return;
@@ -56,6 +60,25 @@ export const submitPermohonan = async (
       aksi: 'SUBMIT_PERMOHONAN',
       rincian: `Permohonan ${nomorPermohonan} disubmit untuk verifikasi`,
     });
+
+    // Cari email admin / sekretariat untuk notifikasi email
+    const adminUser = await prisma.user.findFirst({
+      where: { role: 'ADMIN', isActive: true },
+    });
+
+    if (adminUser?.email) {
+      sendNotifikasiPermohonanBaruEmail({
+        adminEmail: adminUser.email,
+        nomorPermohonan,
+        trackingNumber: updated.trackingNumber,
+        namaPemohon: req.user!.name,
+        instansiPemohon: req.user!.agency || 'Penyidik POLRI',
+        terperiksaNama: permohonan.terperiksa?.namaLengkap || 'Terperiksa',
+        nomorLp: permohonan.perkara?.nomorLaporanPolisi || '-',
+      }).catch((err) => {
+        console.error('❌ Gagal mengirim notifikasi email permohonan baru ke Admin:', err);
+      });
+    }
 
     sendSuccess(res, updated, 'Permohonan berhasil disubmit');
   } catch (err) {

@@ -11,10 +11,10 @@ async function main() {
 
   // 1. Seed 4 Canonical Role Users (All with password: password123)
   const adminUser = await prisma.user.upsert({
-    where: { email: 'sekretariat@polri.go.id' },
+    where: { email: 'etatsiappulih@gmail.com' },
     update: { password: passwordHash },
     create: {
-      email: 'sekretariat@polri.go.id',
+      email: 'etatsiappulih@gmail.com',
       password: passwordHash,
       role: UserRole.ADMIN,
       name: 'Kompol Arya Wicaksono, S.I.K.',
@@ -27,10 +27,10 @@ async function main() {
   console.log('✔ User Sekretariat (Admin) created/updated (password: password123):', adminUser.email);
 
   const pengajuUser = await prisma.user.upsert({
-    where: { email: 'penyidik@polres.go.id' },
+    where: { email: 'code72694@gmail.com' },
     update: { password: passwordHash },
     create: {
-      email: 'penyidik@polres.go.id',
+      email: 'code72694@gmail.com',
       password: passwordHash,
       role: UserRole.PENGAJU,
       name: 'Ipda Budi Santoso, S.H.',
@@ -43,10 +43,10 @@ async function main() {
   console.log('✔ User Pengaju (Penyidik) created/updated (password: password123):', pengajuUser.email);
 
   const medisUser = await prisma.user.upsert({
-    where: { email: 'medis@tat.go.id' },
+    where: { email: 'k300gamers@gmail.com' },
     update: { password: passwordHash },
     create: {
-      email: 'medis@tat.go.id',
+      email: 'k300gamers@gmail.com',
       password: passwordHash,
       role: UserRole.MEDIS,
       name: 'dr. Ratna Sp.KJ',
@@ -59,10 +59,10 @@ async function main() {
   console.log('✔ User Asesor Medis created/updated (password: password123):', medisUser.email);
 
   const hukumUser = await prisma.user.upsert({
-    where: { email: 'hukum@tat.go.id' },
+    where: { email: 'harykurniawan155@gmail.com' },
     update: { password: passwordHash },
     create: {
-      email: 'hukum@tat.go.id',
+      email: 'harykurniawan155@gmail.com',
       password: passwordHash,
       role: UserRole.HUKUM,
       name: 'Agus Pratama, S.H., M.H.',
@@ -215,10 +215,10 @@ async function main() {
   console.log('✨ Seeding completed successfully!');
   console.log('--------------------------------------------------');
   console.log('Login credentials for all 4 roles:');
-  console.log('1. Sekretariat (Admin) : sekretariat@polri.go.id | password123');
-  console.log('2. Pengaju (Penyidik)  : penyidik@polres.go.id     | password123');
-  console.log('3. Asesor Medis        : medis@tat.go.id          | password123');
-  console.log('4. Asesor Hukum        : hukum@tat.go.id          | password123');
+  console.log('1. Sekretariat (Admin) : etatsiappulih@gmail.com   | password123');
+  console.log('2. Pengaju (Penyidik)  : code72694@gmail.com       | password123');
+  console.log('3. Asesor Medis        : k300gamers@gmail.com     | password123');
+  console.log('4. Asesor Hukum        : harykurniawan155@gmail.com | password123');
   console.log('--------------------------------------------------');
 }
 

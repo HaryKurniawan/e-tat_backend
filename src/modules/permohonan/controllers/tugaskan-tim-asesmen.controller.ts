@@ -4,7 +4,7 @@ import { sendSuccess, sendNotFound } from '../../../utils/response.util';
 import { penugasanSchema } from '../permohonan.schema';
 import { getParam } from '../../../utils/param.util';
 import { logAudit } from '../../../utils/audit.util';
-import { sendPenugasanHukumEmail } from '../../../services/email.service';
+import { sendPenugasanHukumEmail, sendPenugasanMedisEmail } from '../../../services/email.service';
 
 /**
  * POST /api/permohonan/:id/tugaskan
@@ -82,6 +82,25 @@ export const tugaskanTimAsesmen = async (
         },
       },
     });
+
+    // Kirim notifikasi email ke Asesor Medis secara asynchronous (non-blocking)
+    if (updated && updated.timAsesmen?.asesorMedis?.email && updated.terperiksa) {
+      const asesorMedis = updated.timAsesmen.asesorMedis;
+      sendPenugasanMedisEmail({
+        asesorEmail: asesorMedis.email,
+        asesorNama: asesorMedis.name,
+        nomorPermohonan: updated.nomorPermohonan,
+        trackingNumber: updated.trackingNumber,
+        jadwalPemeriksaanMedis: updated.timAsesmen.jadwalPemeriksaanMedis,
+        jadwalPleno: updated.timAsesmen.jadwalPleno,
+        lokasiPemeriksaan: updated.timAsesmen.lokasiPemeriksaan,
+        sekretariatNama: req.user!.name,
+        terperiksa: updated.terperiksa,
+        perkara: updated.perkara,
+      }).catch((err) => {
+        console.error('❌ Gagal mengirim notifikasi email penugasan medis:', err);
+      });
+    }
 
     // Kirim notifikasi email ke Asesor Hukum secara asynchronous (non-blocking)
     if (updated && updated.timAsesmen?.asesorHukum?.email && updated.terperiksa) {
