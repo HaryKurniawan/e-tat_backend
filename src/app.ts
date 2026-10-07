@@ -1,4 +1,4 @@
-import './types/express';
+/// <reference path="./types/express.d.ts" />
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
