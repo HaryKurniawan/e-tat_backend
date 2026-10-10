@@ -22,6 +22,7 @@ import klarifikasiRoutes from './modules/klarifikasi/klarifikasi.routes';
 import dashboardRoutes from './modules/dashboard/dashboard.routes';
 import auditRoutes from './modules/audit/audit.routes';
 import uploadRoutes from './modules/upload/upload.routes';
+import prasyaratPemeriksaanRoutes from './modules/prasyarat-pemeriksaan/prasyarat-pemeriksaan.routes';
 
 const app: Application = express();
 
@@ -122,6 +123,7 @@ app.use('/api/klarifikasi', klarifikasiRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/prasyarat-pemeriksaan', prasyaratPemeriksaanRoutes);
 
 // Fallback & Error handling
 app.use(notFoundHandler);

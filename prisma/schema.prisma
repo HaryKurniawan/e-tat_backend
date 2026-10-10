@@ -262,6 +262,7 @@ model User {
   timAsesmenSebagaiAdmin  TimAsesmen[]     @relation("SekretariatRelation")
   registrasiterdaftar  RegistrasiPengguna[] @relation("ApprovedByRelation")
   klarifikasiDari      Klarifikasi[]        @relation("KlarifikasiDariRelation")
+  prasyaratPemeriksaanCatatan PrasyaratPemeriksaan[] @relation("PetugasPenerimaPrasyarat")
   auditLogs            AuditLog[]
 
   @@map("users")
@@ -349,6 +350,7 @@ model PermohonanAsesmen {
   tindakLanjutLayanan       TindakLanjutLayanan?
   monitoringTindakLanjut    MonitoringTindakLanjut?
   instrumenKriteriaPlasemen InstrumenKriteriaPlasemen?
+  prasyaratPemeriksaan      PrasyaratPemeriksaan?
   klarifikasiList           Klarifikasi[]
   auditLogs                 AuditLog[]
 
@@ -387,6 +389,66 @@ model Terperiksa {
   updatedAt DateTime @updatedAt
 
   @@map("terperiksa")
+}
+
+// =====================================================================
+// PRASYARAT PEMERIKSAAN & PENERIMAAN
+// =====================================================================
+
+model PrasyaratPemeriksaan {
+  id           String   @id @default(uuid())
+  permohonanId String   @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+
+  // 1. Checklist Kehadiran & Kedatangan Subjek
+  waktuKedatangan            DateTime?
+  kehadiranSubjek            Boolean   @default(false)
+  pencocokanIdentitas        Boolean   @default(false)
+  catatanPencocokanIdentitas String?
+
+  // 2. Petugas Pengantar & Pendamping/Wali Hadir
+  namaPengantar              String?
+  instansiPengantar          String?
+  jabatanPengantar           String?
+  kehadiranPengantar         Boolean   @default(false)
+
+  kehadiranPendamping        Boolean   @default(false)
+  namaPendamping             String?
+  hubunganPendamping         String?
+  dasarKeterlibatan          String?   // Surat Kuasa / Ortu / Wali Hukum
+  kontakPendamping           String?
+
+  // 3. Penerjemah
+  membutuhkanPenerjemah      Boolean   @default(false)
+  namaPenerjemah             String?
+  bahasaPenerjemah           String?
+  kehadiranPenerjemah        Boolean   @default(false)
+  nomorPenugasanPenerjemah   String?
+
+  // 4. Form Persetujuan / Assent (Informed Consent)
+  sudahDisetujui             Boolean   @default(false)
+  jenisFormPersetujuan       String?   // "Informed Consent (Dewasa)" | "Assent (Anak/Remaja)" | "Persetujuan Wali"
+  tanggalPersetujuan         DateTime?
+  penandatanganPersetujuan    String?
+  dokumenPersetujuanUrl      String?
+
+  // 5. Pernyataan Bebas Biaya
+  pernyataanBebasBiaya       Boolean   @default(false)
+  tanggalPernyataanBebasBiaya DateTime?
+  dokumenBebasBiayaUrl       String?
+
+  // Catatan Tambahan / Kondisi Khusus
+  kondisiKhususDarurat       Boolean   @default(false)
+  catatanKondisiKhusus       String?
+  tindakanDaruratRujukan     String?
+
+  petugasPenerimaId          String?
+  petugasPenerima            User?     @relation("PetugasPenerimaPrasyarat", fields: [petugasPenerimaId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("prasyarat_pemeriksaan")
 }
 
 // =====================================================================
