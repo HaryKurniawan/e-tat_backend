@@ -128,7 +128,7 @@ router.post(
  */
 router.post(
   '/:permohonanId/tanda-tangan',
-  guardRole([UserRole.ADMIN, UserRole.MEDIS, UserRole.HUKUM]),
+  guardRole([UserRole.ADMIN, UserRole.MEDIS, UserRole.HUKUM, UserRole.PENGAJU]),
   prosesTandaTangan
 );
 

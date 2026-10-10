@@ -40,7 +40,7 @@ export const verifikasiPermohonan = async (
 
     const updated = await prisma.permohonanAsesmen.update({
       where: { id },
-      data: { applicationStatus: 'ADMIN_REVIEW' },
+      data: { applicationStatus: 'AWAITING_DISPOSITION' },
     });
 
     await logAudit({
