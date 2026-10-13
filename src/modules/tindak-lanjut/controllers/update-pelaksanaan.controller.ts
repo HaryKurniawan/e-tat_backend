@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusPelaksanaanRehab } from '@prisma/client';
 import prisma from '../../../config/database';
-import { sendSuccess } from '../../../utils/response.util';
+import { sendSuccess, sendForbidden, sendNotFound } from '../../../utils/response.util';
 import { updatePelaksanaanRehabSchema } from '../tindak-lanjut.schema';
 import { getParam } from '../../../utils/param.util';
+import { checkTindakLanjutAuthorization } from '../tindak-lanjut.auth';
 
 /**
  * Update koordinasi dan serah terima pelaksanaan rehabilitasi
@@ -16,6 +17,18 @@ export const updatePelaksanaan = async (
   try {
     const permohonanId = getParam(req, 'permohonanId');
     const user = req.user!;
+
+    // Validasi otorisasi (khususnya pembatasan akses tenaga medis & pengaju)
+    const authCheck = await checkTindakLanjutAuthorization(permohonanId, user);
+    if (!authCheck.authorized) {
+      if (authCheck.notFound) {
+        sendNotFound(res, authCheck.message);
+      } else {
+        sendForbidden(res, authCheck.message);
+      }
+      return;
+    }
+
     const body = updatePelaksanaanRehabSchema.parse(req.body);
 
     let monitoring = await prisma.monitoringTindakLanjut.findUnique({

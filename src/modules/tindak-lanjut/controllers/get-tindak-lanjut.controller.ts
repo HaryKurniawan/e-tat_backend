@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../../../config/database';
-import { sendSuccess } from '../../../utils/response.util';
+import { sendSuccess, sendForbidden, sendNotFound } from '../../../utils/response.util';
 import { getParam } from '../../../utils/param.util';
+import { checkTindakLanjutAuthorization } from '../tindak-lanjut.auth';
 
 /**
  * Mendapatkan data Tindak Lanjut dan Monitoring untuk permohonan
@@ -13,6 +14,18 @@ export const getTindakLanjutByPermohonan = async (
 ): Promise<void> => {
   try {
     const permohonanId = getParam(req, 'permohonanId');
+    const user = req.user!;
+
+    // Validasi otorisasi (khususnya pembatasan akses tenaga medis & pengaju)
+    const authCheck = await checkTindakLanjutAuthorization(permohonanId, user);
+    if (!authCheck.authorized) {
+      if (authCheck.notFound) {
+        sendNotFound(res, authCheck.message);
+      } else {
+        sendForbidden(res, authCheck.message);
+      }
+      return;
+    }
 
     const [tindakLanjut, monitoring] = await Promise.all([
       prisma.tindakLanjutLayanan.findUnique({

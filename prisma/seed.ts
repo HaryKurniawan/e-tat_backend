@@ -1,6 +1,8 @@
-import { PrismaClient, UserRole, ApplicationStatus, AssessmentStatus } from '@prisma/client';
+import { PrismaClient, UserRole, ApplicationStatus, AssessmentStatus, KategoriInstansi } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import process from 'node:process';
+import { seedRiwayatData } from './seedRiwayat';
+import { seedAktifData } from './seedAktif';
 
 const prisma = new PrismaClient();
 
@@ -211,6 +213,104 @@ async function main() {
 
     console.log('✔ Sample permohonan asesmen created:', samplePermohonan.nomorPermohonan);
   }
+
+  // 3. Seed Sample RegistrasiPengguna Accounts for Verification Dashboard
+  const sampleRegistrations = [
+    {
+      nomorRegistrasi: 'REG-TAT/2026/POLRES-001',
+      namaLengkap: 'Ipda Budi Santoso, S.H.',
+      pangkat: 'Ipda',
+      nrp: '85010234',
+      jabatan: 'Penyidik Pembantu Unit I',
+      instansi: 'Satresnarkoba Polres Metro Jakarta Pusat',
+      kategoriInstansi: KategoriInstansi.Polres_Polresta,
+      wilayahHukum: 'Polda Metro Jaya',
+      alamatKantor: 'Jl. Kramat Raya No. 61, Jakarta Pusat',
+      email: 'code72694@gmail.com',
+      phone: '081298765432',
+      status: 'approved' as const,
+      catatanAdmin: 'Dokumen KTP, KTA, dan Surat Penunjukan terverifikasi sah.',
+      approvedAt: new Date(),
+      approvedById: adminUser.id,
+    },
+    {
+      nomorRegistrasi: 'REG-TAT/2026/BNNP-002',
+      namaLengkap: 'dr. Ratna Sp.KJ',
+      pangkat: 'Penata Tk.I',
+      nrp: '198205122008012001',
+      jabatan: 'Dokter Asesor Medis TAT',
+      instansi: 'BNNP DKI Jakarta / RS Pengayoman',
+      kategoriInstansi: KategoriInstansi.BNNK_BNNP,
+      wilayahHukum: 'DKI Jakarta',
+      alamatKantor: 'Jl. MT Haryono No. 11, Jakarta Timur',
+      email: 'k300gamers@gmail.com',
+      phone: '081311223344',
+      status: 'approved' as const,
+      catatanAdmin: 'SIP dan Surat Penugasan Tim Medis TAT Valid.',
+      approvedAt: new Date(),
+      approvedById: adminUser.id,
+    },
+    {
+      nomorRegistrasi: 'REG-TAT/2026/KEJATI-003',
+      namaLengkap: 'Agus Pratama, S.H., M.H.',
+      pangkat: 'Jaksa Pratama',
+      nrp: '197903152003121002',
+      jabatan: 'Asesor Hukum TAT / Jaksa Penuntut',
+      instansi: 'Kejaksaan Tinggi DKI Jakarta',
+      kategoriInstansi: KategoriInstansi.Kejaksaan,
+      wilayahHukum: 'Kejati DKI Jakarta',
+      alamatKantor: 'Jl. Rasuna Said No. 5, Jakarta Selatan',
+      email: 'harykurniawan155@gmail.com',
+      phone: '081399887766',
+      status: 'approved' as const,
+      catatanAdmin: 'SK Jaksa dan Penugasan TAT Terverifikasi.',
+      approvedAt: new Date(),
+      approvedById: adminUser.id,
+    },
+    {
+      nomorRegistrasi: 'REG-TAT/2026/POLSEK-004',
+      namaLengkap: 'Bripka Eko Prasetyo, S.H.',
+      pangkat: 'Bripka',
+      nrp: '88081727',
+      jabatan: 'Kanit Reskrim',
+      instansi: 'Polsek Samarinda Kota',
+      kategoriInstansi: KategoriInstansi.Polsek,
+      wilayahHukum: 'Kota Samarinda / Polda Kaltim',
+      alamatKantor: 'Jl. Bhayangkara No. 1, Samarinda',
+      email: 'penyidik.polsek.samarinda@polri.go.id',
+      phone: '081399887700',
+      status: 'pending' as const,
+    },
+    {
+      nomorRegistrasi: 'REG-TAT/2026/POLRES-005',
+      namaLengkap: 'AKP Heru Wijaya, S.I.K.',
+      pangkat: 'AKP',
+      nrp: '78091244',
+      jabatan: 'Kasat Resnarkoba',
+      instansi: 'Polres Kutai Kartanegara',
+      kategoriInstansi: KategoriInstansi.Polres_Polresta,
+      wilayahHukum: 'Polda Kaltim',
+      alamatKantor: 'Jl. Wolter Monginsidi No. 1, Tenggarong',
+      email: 'satnarkoba.kukar@polri.go.id',
+      phone: '081255443322',
+      status: 'pending' as const,
+    },
+  ];
+
+  for (const reg of sampleRegistrations) {
+    await prisma.registrasiPengguna.upsert({
+      where: { nomorRegistrasi: reg.nomorRegistrasi },
+      update: reg,
+      create: reg,
+    });
+  }
+  console.log('✔ Sample registrasi pengguna accounts seeded successfully.');
+
+  // Seed Riwayat & Arsip Asesmen TAT data from separate file
+  await seedRiwayatData(prisma);
+
+  // Seed Permohonan Asesmen Aktif data
+  await seedAktifData(prisma);
 
   console.log('✨ Seeding completed successfully!');
   console.log('--------------------------------------------------');

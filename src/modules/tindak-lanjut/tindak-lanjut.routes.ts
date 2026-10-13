@@ -24,33 +24,33 @@ router.get('/:permohonanId', getTindakLanjutByPermohonan);
 /**
  * @route   POST /api/tindak-lanjut/:permohonanId
  * @desc    Menyimpan atau memperbarui data rujukan & status tindak lanjut
- * @access  ADMIN, PENGAJU
+ * @access  ADMIN, PENGAJU, MEDIS
  */
 router.post(
   '/:permohonanId',
-  guardRole([UserRole.ADMIN, UserRole.PENGAJU]),
+  guardRole([UserRole.ADMIN, UserRole.PENGAJU, UserRole.MEDIS]),
   saveTindakLanjut
 );
 
 /**
  * @route   POST /api/tindak-lanjut/:permohonanId/pelaksanaan
  * @desc    Memperbarui koordinasi & serah terima fasilitas
- * @access  ADMIN, PENGAJU
+ * @access  ADMIN, PENGAJU, MEDIS
  */
 router.post(
   '/:permohonanId/pelaksanaan',
-  guardRole([UserRole.ADMIN, UserRole.PENGAJU]),
+  guardRole([UserRole.ADMIN, UserRole.PENGAJU, UserRole.MEDIS]),
   updatePelaksanaan
 );
 
 /**
  * @route   POST /api/tindak-lanjut/:permohonanId/laporan-kontrol
  * @desc    Menambahkan laporan kemajuan / kunjungan berkala
- * @access  ADMIN, PENGAJU
+ * @access  ADMIN, PENGAJU, MEDIS
  */
 router.post(
   '/:permohonanId/laporan-kontrol',
-  guardRole([UserRole.ADMIN, UserRole.PENGAJU]),
+  guardRole([UserRole.ADMIN, UserRole.PENGAJU, UserRole.MEDIS]),
   upload.single('fileBukti'),
   addLaporanKontrol
 );

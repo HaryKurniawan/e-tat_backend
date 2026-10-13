@@ -5,10 +5,11 @@ import {
   StatusRujukan,
 } from '@prisma/client';
 import prisma from '../../../config/database';
-import { sendSuccess } from '../../../utils/response.util';
+import { sendSuccess, sendForbidden, sendNotFound } from '../../../utils/response.util';
 import { updateTindakLanjutSchema } from '../tindak-lanjut.schema';
 import { getParam } from '../../../utils/param.util';
 import { logAudit } from '../../../utils/audit.util';
+import { checkTindakLanjutAuthorization } from '../tindak-lanjut.auth';
 
 /**
  * Menyimpan / memperbarui data Tindak Lanjut Layanan
@@ -21,6 +22,18 @@ export const saveTindakLanjut = async (
   try {
     const permohonanId = getParam(req, 'permohonanId');
     const user = req.user!;
+
+    // Validasi otorisasi (khususnya pembatasan akses tenaga medis & pengaju)
+    const authCheck = await checkTindakLanjutAuthorization(permohonanId, user);
+    if (!authCheck.authorized) {
+      if (authCheck.notFound) {
+        sendNotFound(res, authCheck.message);
+      } else {
+        sendForbidden(res, authCheck.message);
+      }
+      return;
+    }
+
     const body = updateTindakLanjutSchema.parse(req.body);
 
     const tl = await prisma.tindakLanjutLayanan.upsert({
