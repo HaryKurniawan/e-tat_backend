@@ -18,27 +18,27 @@ export async function seedAktifData(prisma: PrismaClient) {
 
   // Cari user pengaju sesuai akun yang diminta
   const pengaju = await prisma.user.findFirst({
-    where: { email: 'code72694@gmail.com' },
+    where: { email: 'pengaju@gmail.com' },
   });
 
   if (!pengaju) {
-    console.warn('⚠️ User pengaju code72694@gmail.com tidak ditemukan. Lewati seeding aktif.');
+    console.warn('⚠️ User pengaju pengaju@gmail.com tidak ditemukan. Lewati seeding aktif.');
     return;
   }
 
   // Cari admin/sekretariat
   const adminUser = await prisma.user.findFirst({
-    where: { email: 'etatsiappulih@gmail.com' },
+    where: { email: 'admin@gmail.com' },
   }) || pengaju;
 
   // Cari asesor medis
   const medisUser = await prisma.user.findFirst({
-    where: { email: 'k300gamers@gmail.com' },
+    where: { email: 'medis@gmail.com' },
   }) || pengaju;
 
   // Cari asesor hukum
   const hukumUser = await prisma.user.findFirst({
-    where: { email: 'harykurniawan155@gmail.com' },
+    where: { email: 'hukum@gmail.com' },
   }) || pengaju;
 
   // =========================================================================

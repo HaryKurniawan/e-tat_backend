@@ -13,10 +13,10 @@ async function main() {
 
   // 1. Seed 4 Canonical Role Users (All with password: password123)
   const adminUser = await prisma.user.upsert({
-    where: { email: 'etatsiappulih@gmail.com' },
+    where: { email: 'admin@gmail.com' },
     update: { password: passwordHash },
     create: {
-      email: 'etatsiappulih@gmail.com',
+      email: 'admin@gmail.com',
       password: passwordHash,
       role: UserRole.ADMIN,
       name: 'Kompol Arya Wicaksono, S.I.K.',
@@ -29,10 +29,10 @@ async function main() {
   console.log('✔ User Sekretariat (Admin) created/updated (password: password123):', adminUser.email);
 
   const pengajuUser = await prisma.user.upsert({
-    where: { email: 'code72694@gmail.com' },
+    where: { email: 'pengaju@gmail.com' },
     update: { password: passwordHash },
     create: {
-      email: 'code72694@gmail.com',
+      email: 'pengaju@gmail.com',
       password: passwordHash,
       role: UserRole.PENGAJU,
       name: 'Ipda Budi Santoso, S.H.',
@@ -45,10 +45,10 @@ async function main() {
   console.log('✔ User Pengaju (Penyidik) created/updated (password: password123):', pengajuUser.email);
 
   const medisUser = await prisma.user.upsert({
-    where: { email: 'k300gamers@gmail.com' },
+    where: { email: 'medis@gmail.com' },
     update: { password: passwordHash },
     create: {
-      email: 'k300gamers@gmail.com',
+      email: 'medis@gmail.com',
       password: passwordHash,
       role: UserRole.MEDIS,
       name: 'dr. Ratna Sp.KJ',
@@ -61,10 +61,10 @@ async function main() {
   console.log('✔ User Asesor Medis created/updated (password: password123):', medisUser.email);
 
   const hukumUser = await prisma.user.upsert({
-    where: { email: 'harykurniawan155@gmail.com' },
+    where: { email: 'hukum@gmail.com' },
     update: { password: passwordHash },
     create: {
-      email: 'harykurniawan155@gmail.com',
+      email: 'hukum@gmail.com',
       password: passwordHash,
       role: UserRole.HUKUM,
       name: 'Agus Pratama, S.H., M.H.',
@@ -226,7 +226,7 @@ async function main() {
       kategoriInstansi: KategoriInstansi.Polres_Polresta,
       wilayahHukum: 'Polda Metro Jaya',
       alamatKantor: 'Jl. Kramat Raya No. 61, Jakarta Pusat',
-      email: 'code72694@gmail.com',
+      email: 'pengaju@gmail.com',
       phone: '081298765432',
       status: 'approved' as const,
       catatanAdmin: 'Dokumen KTP, KTA, dan Surat Penunjukan terverifikasi sah.',
@@ -243,7 +243,7 @@ async function main() {
       kategoriInstansi: KategoriInstansi.BNNK_BNNP,
       wilayahHukum: 'DKI Jakarta',
       alamatKantor: 'Jl. MT Haryono No. 11, Jakarta Timur',
-      email: 'k300gamers@gmail.com',
+      email: 'medis@gmail.com',
       phone: '081311223344',
       status: 'approved' as const,
       catatanAdmin: 'SIP dan Surat Penugasan Tim Medis TAT Valid.',
@@ -260,7 +260,7 @@ async function main() {
       kategoriInstansi: KategoriInstansi.Kejaksaan,
       wilayahHukum: 'Kejati DKI Jakarta',
       alamatKantor: 'Jl. Rasuna Said No. 5, Jakarta Selatan',
-      email: 'harykurniawan155@gmail.com',
+      email: 'hukum@gmail.com',
       phone: '081399887766',
       status: 'approved' as const,
       catatanAdmin: 'SK Jaksa dan Penugasan TAT Terverifikasi.',
@@ -315,10 +315,10 @@ async function main() {
   console.log('✨ Seeding completed successfully!');
   console.log('--------------------------------------------------');
   console.log('Login credentials for all 4 roles:');
-  console.log('1. Sekretariat (Admin) : etatsiappulih@gmail.com   | password123');
-  console.log('2. Pengaju (Penyidik)  : code72694@gmail.com       | password123');
-  console.log('3. Asesor Medis        : k300gamers@gmail.com     | password123');
-  console.log('4. Asesor Hukum        : harykurniawan155@gmail.com | password123');
+  console.log('1. Sekretariat (Admin) : admin@gmail.com   | password123');
+  console.log('2. Pengaju (Penyidik)  : pengaju@gmail.com | password123');
+  console.log('3. Asesor Medis        : medis@gmail.com   | password123');
+  console.log('4. Asesor Hukum        : hukum@gmail.com   | password123');
   console.log('--------------------------------------------------');
 }
 
