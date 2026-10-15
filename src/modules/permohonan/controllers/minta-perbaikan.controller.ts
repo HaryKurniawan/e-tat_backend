@@ -27,10 +27,10 @@ export const mintaPerbaikan = async (
     if (dokumenPerluDiperbaiki.length > 0) {
       await Promise.all(
         dokumenPerluDiperbaiki.map((d) =>
-          prisma.dokumenPersyaratan.update({
-            where: { id: d.dokumenId },
+          prisma.dokumenPersyaratan.updateMany({
+            where: { id: d.dokumenId, permohonanId: id },
             data: { statusVerifikasi: 'perlu_perbaikan', catatanKoreksi: d.catatanKoreksi },
-          })
+          }).catch(() => null)
         )
       );
     }

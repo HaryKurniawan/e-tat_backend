@@ -1,12 +1,14 @@
 import { z } from 'zod';
 
+const normalizeEnum = (val: unknown) => typeof val === 'string' ? val.replace(/\s+/g, '_') : val;
+
 export const updateTindakLanjutSchema = z.object({
-  jenisTindakLanjut: z.enum([
+  jenisTindakLanjut: z.preprocess(normalizeEnum, z.enum([
     'Rujukan_Rehabilitasi',
     'Proses_Peradilan',
     'Diversi_Restorative_Justice',
     'Lainnya',
-  ]),
+  ])),
   namaFasilitasTujuan: z.string().optional(),
   kontakFasilitas: z.string().optional(),
   statusRujukan: z.enum([
@@ -51,14 +53,14 @@ export const updatePelaksanaanRehabSchema = z.object({
 });
 
 export const createLaporanKontrolSchema = z.object({
-  jenisLaporan: z.enum([
+  jenisLaporan: z.preprocess(normalizeEnum, z.enum([
     'Laporan_Kemajuan_Periodik',
     'Laporan_Kunjungan_Kontrol',
     'Laporan_Evaluasi_Klinis',
     'Laporan_Wajib_Lapor',
     'Laporan_Kejadian_Khusus',
     'Laporan_Akhir_Layanan',
-  ]),
+  ])),
   tanggalKegiatanSebenarnya: z.string().datetime().or(z.string().min(1)),
   namaFasilitasPelapor: z.string().optional(),
   nomorLaporanFasilitas: z.string().optional(),

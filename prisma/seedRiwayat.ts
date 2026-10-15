@@ -38,8 +38,8 @@ export async function seedRiwayatData(prisma: PrismaClient) {
       isMendekatiTenggat: false,
       terperiksa: {
         create: {
-          namaLengkap: 'Budi Hermawan',
-          alias: 'Budi Bin Slamet',
+          namaLengkap: '[TEST] Tersangka 7',
+          alias: 'Tersangka Uji 7',
           nik: '3171012345670088',
           isNikVerified: true,
           tempatLahir: 'Jakarta',
@@ -55,7 +55,7 @@ export async function seedRiwayatData(prisma: PrismaClient) {
           nomorLaporanPolisi: 'LP/A/302/VIII/2026/SPKT/POLRES_JAKPUS',
           tanggalLp: new Date('2026-08-10'),
           instansiPenyidik: 'Satresnarkoba Polres Metro Jakarta Pusat',
-          namaPenyidik: 'Ipda Budi Santoso, S.H.',
+          namaPenyidik: '[TEST] Penyidik Pengaju Satresnarkoba',
           nomorHpPenyidik: '081298765432',
           pasalDipersangkakan: 'Pasal 127 ayat (1) huruf a UU No. 35 Tahun 2009 tentang Narkotika',
           tempatKejadianPerkara: 'Sebuah indekos di wilayah Senen, Jakarta Pusat',
@@ -97,8 +97,8 @@ export async function seedRiwayatData(prisma: PrismaClient) {
       isMendekatiTenggat: false,
       terperiksa: {
         create: {
-          namaLengkap: 'Siti Nurhaliza',
-          alias: 'Siti',
+          namaLengkap: '[TEST] Tersangka 8',
+          alias: 'Tersangka Uji 8',
           nik: '3172025508940005',
           isNikVerified: true,
           tempatLahir: 'Jakarta',
@@ -114,7 +114,7 @@ export async function seedRiwayatData(prisma: PrismaClient) {
           nomorLaporanPolisi: 'LP/A/215/VII/2026/SPKT/POLRES_JAKBAR',
           tanggalLp: new Date('2026-07-18'),
           instansiPenyidik: 'Satresnarkoba Polres Metro Jakarta Barat',
-          namaPenyidik: 'Ipda Budi Santoso, S.H.',
+          namaPenyidik: '[TEST] Penyidik Pengaju Satresnarkoba',
           nomorHpPenyidik: '081298765432',
           pasalDipersangkakan: 'Pasal 127 ayat (1) huruf a UU No. 35 Tahun 2009 tentang Narkotika',
           tempatKejadianPerkara: 'Sebuah kafe daerah Palmerah, Jakarta Barat',
@@ -156,8 +156,8 @@ export async function seedRiwayatData(prisma: PrismaClient) {
       isMendekatiTenggat: false,
       terperiksa: {
         create: {
-          namaLengkap: 'Hendra Kurniawan',
-          alias: 'Hendra / Ko Hendra',
+          namaLengkap: '[TEST] Tersangka 9',
+          alias: 'Tersangka Uji 9',
           nik: '3173041102880002',
           isNikVerified: true,
           tempatLahir: 'Bandung',
@@ -173,7 +173,7 @@ export async function seedRiwayatData(prisma: PrismaClient) {
           nomorLaporanPolisi: 'LP/A/140/VI/2026/SPKT/POLDA_METRO',
           tanggalLp: new Date('2026-06-03'),
           instansiPenyidik: 'Ditresnarkoba Polda Metro Jaya',
-          namaPenyidik: 'AKP Agus Pratama, S.H.',
+          namaPenyidik: '[TEST] Penyidik Pengaju Ditresnarkoba',
           nomorHpPenyidik: '081399887766',
           pasalDipersangkakan: 'Pasal 114 ayat (2) jo Pasal 112 ayat (2) UU No. 35 Tahun 2009 tentang Narkotika',
           tempatKejadianPerkara: 'Kamar hotel bintang 3 di Jakarta Barat',

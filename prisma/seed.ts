@@ -14,15 +14,19 @@ async function main() {
   // 1. Seed 4 Canonical Role Users (All with password: password123)
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@gmail.com' },
-    update: { password: passwordHash },
+    update: {
+      password: passwordHash,
+      name: '[TEST] Admin Sekretariat TAT',
+      position: 'Petugas Verifikasi & Sekretariat TAT (Akun Uji)'
+    },
     create: {
       email: 'admin@gmail.com',
       password: passwordHash,
       role: UserRole.ADMIN,
-      name: 'Kompol Arya Wicaksono, S.I.K.',
+      name: '[TEST] Admin Sekretariat TAT',
       nip: '79080512',
       agency: 'Sekretariat TAT Polda Metro Jaya',
-      position: 'Ketua Tim Sekretariat TAT',
+      position: 'Petugas Verifikasi & Sekretariat TAT (Akun Uji)',
       phone: '081234567890',
     },
   });
@@ -30,15 +34,19 @@ async function main() {
 
   const pengajuUser = await prisma.user.upsert({
     where: { email: 'pengaju@gmail.com' },
-    update: { password: passwordHash },
+    update: {
+      password: passwordHash,
+      name: '[TEST] Penyidik Pengaju Satresnarkoba',
+      position: 'Penyidik Pemohon Asesmen TAT (Akun Uji)'
+    },
     create: {
       email: 'pengaju@gmail.com',
       password: passwordHash,
       role: UserRole.PENGAJU,
-      name: 'Ipda Budi Santoso, S.H.',
+      name: '[TEST] Penyidik Pengaju Satresnarkoba',
       nip: '85010234',
       agency: 'Satresnarkoba Polres Metro Jakarta Pusat',
-      position: 'Penyidik Pembantu Unit I',
+      position: 'Penyidik Pemohon Asesmen TAT (Akun Uji)',
       phone: '081298765432',
     },
   });
@@ -46,15 +54,19 @@ async function main() {
 
   const medisUser = await prisma.user.upsert({
     where: { email: 'medis@gmail.com' },
-    update: { password: passwordHash },
+    update: {
+      password: passwordHash,
+      name: '[TEST] Dokter Asesor Medis TAT',
+      position: 'Dokter Pemeriksa Medis TAT (Akun Uji)'
+    },
     create: {
       email: 'medis@gmail.com',
       password: passwordHash,
       role: UserRole.MEDIS,
-      name: 'dr. Ratna Sp.KJ',
+      name: '[TEST] Dokter Asesor Medis TAT',
       nip: '198205122008012001',
       agency: 'BNNP DKI Jakarta / RS Pengayoman',
-      position: 'Dokter Asesor Medis TAT',
+      position: 'Dokter Pemeriksa Medis TAT (Akun Uji)',
       phone: '081311223344',
     },
   });
@@ -62,15 +74,19 @@ async function main() {
 
   const hukumUser = await prisma.user.upsert({
     where: { email: 'hukum@gmail.com' },
-    update: { password: passwordHash },
+    update: {
+      password: passwordHash,
+      name: '[TEST] Jaksa Asesor Hukum TAT',
+      position: 'Jaksa / Penelaah Hukum TAT (Akun Uji)'
+    },
     create: {
       email: 'hukum@gmail.com',
       password: passwordHash,
       role: UserRole.HUKUM,
-      name: 'Agus Pratama, S.H., M.H.',
+      name: '[TEST] Jaksa Asesor Hukum TAT',
       nip: '197903152003121002',
       agency: 'Kejaksaan Tinggi DKI Jakarta',
-      position: 'Jaksa Pratama / Asesor Hukum TAT',
+      position: 'Jaksa / Penelaah Hukum TAT (Akun Uji)',
       phone: '081399887766',
     },
   });
@@ -96,8 +112,8 @@ async function main() {
         isMendekatiTenggat: false,
         terperiksa: {
           create: {
-            namaLengkap: 'Rian Saputra',
-            alias: 'Rian Bin Slamet',
+            namaLengkap: '[TEST] Tersangka 6',
+            alias: 'Tersangka Uji 6',
             nik: '3171012345670001',
             isNikVerified: true,
             tempatLahir: 'Jakarta',
@@ -106,7 +122,7 @@ async function main() {
             jenisKelamin: 'Laki-laki',
             pekerjaan: 'Wiraswasta',
             alamatKtp: 'Jl. Kemayoran No. 12, Jakarta Pusat',
-            namaWaliPendamping: 'Siti Aminah',
+            namaWaliPendamping: 'Wali Tersangka 6',
             kontakWali: '081288889999',
           },
         },
@@ -121,7 +137,7 @@ async function main() {
             tempatKejadianPerkara: 'Hotel Grand Menteng Lt. 4 Kamar 402, Jakarta Pusat',
             tanggalWaktuPenangkapan: new Date('2026-10-01T23:30:00Z'),
             kronologiSingkat:
-              'Terperiksa diamankan saat penggerebekan di kamar hotel bersama barang bukti sabu sisa pakai. Terperiksa mengaku menggunakan sabu untuk pemakaian pribadi.',
+              'Subjek [TEST] Tersangka 6 diamankan saat penggerebekan di kamar hotel bersama barang bukti sabu sisa pakai. Subjek mengaku menggunakan sabu untuk pemakaian pribadi.',
             barangBuktiList: {
               create: [
                 {
@@ -138,11 +154,11 @@ async function main() {
         },
         timAsesmen: {
           create: {
-            sekretariatId: adminUser.id,
+            sekretariat: { connect: { id: adminUser.id } },
             sekretariatNama: adminUser.name,
-            asesorMedisId: medisUser.id,
+            asesorMedis: { connect: { id: medisUser.id } },
             asesorMedisNama: medisUser.name,
-            asesorHukumId: hukumUser.id,
+            asesorHukum: { connect: { id: hukumUser.id } },
             asesorHukumNama: hukumUser.name,
             jadwalPemeriksaanMedis: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
             jadwalPemeriksaanHukum: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
@@ -218,10 +234,10 @@ async function main() {
   const sampleRegistrations = [
     {
       nomorRegistrasi: 'REG-TAT/2026/POLRES-001',
-      namaLengkap: 'Ipda Budi Santoso, S.H.',
+      namaLengkap: '[TEST] Penyidik Pengaju Satresnarkoba',
       pangkat: 'Ipda',
       nrp: '85010234',
-      jabatan: 'Penyidik Pembantu Unit I',
+      jabatan: 'Penyidik Pemohon Asesmen TAT (Akun Uji)',
       instansi: 'Satresnarkoba Polres Metro Jakarta Pusat',
       kategoriInstansi: KategoriInstansi.Polres_Polresta,
       wilayahHukum: 'Polda Metro Jaya',
@@ -235,10 +251,10 @@ async function main() {
     },
     {
       nomorRegistrasi: 'REG-TAT/2026/BNNP-002',
-      namaLengkap: 'dr. Ratna Sp.KJ',
+      namaLengkap: '[TEST] Dokter Asesor Medis TAT',
       pangkat: 'Penata Tk.I',
       nrp: '198205122008012001',
-      jabatan: 'Dokter Asesor Medis TAT',
+      jabatan: 'Dokter Pemeriksa Medis TAT (Akun Uji)',
       instansi: 'BNNP DKI Jakarta / RS Pengayoman',
       kategoriInstansi: KategoriInstansi.BNNK_BNNP,
       wilayahHukum: 'DKI Jakarta',
@@ -252,10 +268,10 @@ async function main() {
     },
     {
       nomorRegistrasi: 'REG-TAT/2026/KEJATI-003',
-      namaLengkap: 'Agus Pratama, S.H., M.H.',
+      namaLengkap: '[TEST] Jaksa Asesor Hukum TAT',
       pangkat: 'Jaksa Pratama',
       nrp: '197903152003121002',
-      jabatan: 'Asesor Hukum TAT / Jaksa Penuntut',
+      jabatan: 'Jaksa / Penelaah Hukum TAT (Akun Uji)',
       instansi: 'Kejaksaan Tinggi DKI Jakarta',
       kategoriInstansi: KategoriInstansi.Kejaksaan,
       wilayahHukum: 'Kejati DKI Jakarta',
@@ -269,10 +285,10 @@ async function main() {
     },
     {
       nomorRegistrasi: 'REG-TAT/2026/POLSEK-004',
-      namaLengkap: 'Bripka Eko Prasetyo, S.H.',
+      namaLengkap: '[TEST] Penyidik Polsek Samarinda',
       pangkat: 'Bripka',
       nrp: '88081727',
-      jabatan: 'Kanit Reskrim',
+      jabatan: 'Kanit Reskrim (Akun Uji)',
       instansi: 'Polsek Samarinda Kota',
       kategoriInstansi: KategoriInstansi.Polsek,
       wilayahHukum: 'Kota Samarinda / Polda Kaltim',
@@ -283,10 +299,10 @@ async function main() {
     },
     {
       nomorRegistrasi: 'REG-TAT/2026/POLRES-005',
-      namaLengkap: 'AKP Heru Wijaya, S.I.K.',
+      namaLengkap: '[TEST] Penyidik Resnarkoba Kukar',
       pangkat: 'AKP',
       nrp: '78091244',
-      jabatan: 'Kasat Resnarkoba',
+      jabatan: 'Kasat Resnarkoba (Akun Uji)',
       instansi: 'Polres Kutai Kartanegara',
       kategoriInstansi: KategoriInstansi.Polres_Polresta,
       wilayahHukum: 'Polda Kaltim',

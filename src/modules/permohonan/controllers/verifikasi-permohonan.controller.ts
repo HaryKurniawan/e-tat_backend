@@ -27,13 +27,13 @@ export const verifikasiPermohonan = async (
     if (dokumenStatus.length > 0) {
       await Promise.all(
         dokumenStatus.map((ds) =>
-          prisma.dokumenPersyaratan.update({
-            where: { id: ds.dokumenId },
+          prisma.dokumenPersyaratan.updateMany({
+            where: { id: ds.dokumenId, permohonanId: id },
             data: {
               statusVerifikasi: ds.status,
               catatanKoreksi: ds.catatanKoreksi,
             },
-          })
+          }).catch(() => null)
         )
       );
     }

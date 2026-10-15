@@ -74,14 +74,88 @@ export const simpanHasilPleno = async (
       });
     }
 
-    // Jika pleno selesai, update status permohonan
+    // Jika pleno selesai, update status permohonan ke AWAITING_SIGNED_OUTPUTS & inisialisasi RekomendasiResmi
     if (body.statusPleno === 'selesai_sepakat') {
       await prisma.permohonanAsesmen.update({
         where: { id: permohonanId },
         data: {
-          applicationStatus: ApplicationStatus.RESULTS_ISSUED,
+          applicationStatus: ApplicationStatus.AWAITING_SIGNED_OUTPUTS,
         },
       });
+
+      // Otomatis terbitkan draf Rekomendasi Resmi jika belum ada
+      const existingRek = await prisma.rekomendasiResmi.findUnique({
+        where: { permohonanId },
+        include: { daftarPengesah: true },
+      });
+
+      if (!existingRek) {
+        const { generateNomorRekomendasi, generateQrCodeString } = await import('../../../utils/nomor.util');
+        const nomorSurat = await generateNomorRekomendasi();
+        const qrCode = generateQrCodeString('REK', nomorSurat);
+
+        const permohonanDetail = await prisma.permohonanAsesmen.findUnique({
+          where: { id: permohonanId },
+          include: { asesmenMedis: true, asesmenHukum: true },
+        });
+
+        const ringkasanMedis = permohonanDetail?.asesmenMedis?.diagnosisKlinisIcd
+          ? `Diagnosis ICD-10: ${permohonanDetail.asesmenMedis.diagnosisKlinisIcd}. Kebutuhan Rawat: ${permohonanDetail.asesmenMedis.kebutuhanRawat || 'Rawat Inap'}.`
+          : 'Pemeriksaan medis menunjukkan ketergantungan narkotika yang memerlukan rehabilitasi.';
+
+        const ringkasanHukum = permohonanDetail?.asesmenHukum?.analisisPeran
+          ? `Analisis Peran: ${permohonanDetail.asesmenHukum.analisisPeran}. Rekomendasi: ${permohonanDetail.asesmenHukum.rekomendasiHukum || 'Rehabilitasi Medis dan Sosial'}.`
+          : 'Subjek terbukti sebagai penyalahguna murni dan bukan bagian dari jaringan peredaran gelap narkotika.';
+
+        const newRek = await prisma.rekomendasiResmi.create({
+          data: {
+            permohonanId,
+            nomorSurat,
+            dibuatOleh: user.name,
+            ringkasanMedis,
+            ringkasanHukum,
+            rekomendasiFinalText: body.kesepakatanRekomendasi || 'REHABILITASI MEDIS DAN SOSIAL',
+            qrVerificationCode: qrCode,
+            daftarPengesah: {
+              create: [
+                {
+                  nama: 'Kompol Arya Wicaksono, S.I.K.',
+                  jabatan: 'Ketua Tim Asesmen Terpadu',
+                  instansi: 'Polda Kalimantan Timur',
+                  status: 'menunggu',
+                },
+                {
+                  nama: 'dr. Ratna Sp.KJ',
+                  jabatan: 'Asesor Medis',
+                  instansi: 'BNNP Kalimantan Timur',
+                  status: 'menunggu',
+                },
+                {
+                  nama: 'Kompol Bambang Sutedjo, S.H.',
+                  jabatan: 'Asesor Hukum Polri',
+                  instansi: 'Ditresnarkoba Polda Kaltim',
+                  status: 'menunggu',
+                },
+                {
+                  nama: 'Agus Pratama, S.H., M.H.',
+                  jabatan: 'Asesor Hukum Kejaksaan',
+                  instansi: 'Kejaksaan Tinggi Kaltim',
+                  status: 'menunggu',
+                },
+              ],
+            },
+          },
+        });
+
+        await logAudit({
+          permohonanId,
+          actorId: user.id,
+          actorNama: user.name,
+          actorPeran: user.role,
+          aksi: 'BUAT_DRAFT_REKOMENDASI',
+          rincian: `Draf rekomendasi resmi otomatis diinisialisasi dari Pleno dengan No: ${nomorSurat}`,
+        });
+      }
     }
 
     const result = await prisma.sidangPleno.findUnique({

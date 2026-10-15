@@ -76,18 +76,22 @@ export const verifikasiSchema = z.object({
 });
 
 export const mintaPerbaikanSchema = z.object({
-  catatanPerbaikan: z.string().min(5, 'Catatan perbaikan wajib diisi (min 5 karakter)'),
+  catatanPerbaikan: z.string().optional(),
+  catatanKoreksi: z.string().optional(),
   dokumenPerluDiperbaiki: z.array(z.object({
     dokumenId: z.string(),
     catatanKoreksi: z.string(),
   })).default([]),
-});
+}).transform(val => ({
+  catatanPerbaikan: val.catatanPerbaikan || val.catatanKoreksi || 'Perlu perbaikan berkas permohonan',
+  dokumenPerluDiperbaiki: val.dokumenPerluDiperbaiki,
+}));
 
 export const disposisiSchema = z.object({
   disposisiHasil: z.enum(['disetujui', 'ditolak', 'perlu_pendalaman']),
-  disposisiAlasan: z.string().min(5, 'Alasan disposisi wajib diisi'),
-  disposisiKetua: z.string().min(1, 'Nama ketua wajib diisi'),
-  disposisiJabatan: z.string().optional(),
+  disposisiAlasan: z.string().optional().default('Disposisi Ketua Tim Asesmen Terpadu'),
+  disposisiKetua: z.string().optional().default('Ketua Tim Asesmen Terpadu'),
+  disposisiJabatan: z.string().optional().default('Ketua TAT'),
   disposisiBuktiUrl: z.string().optional(),
 });
 

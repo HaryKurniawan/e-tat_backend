@@ -5,6 +5,7 @@ import {
   createDraftRekomendasi,
   prosesTandaTangan,
   konfirmasiTandaTerima,
+  generateRekomendasiPdf,
 } from './rekomendasi.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { guardRole } from '../../middleware/role.middleware';
@@ -58,6 +59,18 @@ router.use(authMiddleware);
  *         description: Detail surat rekomendasi dan status tanda tangan seluruh pengesah
  */
 router.get('/:permohonanId', getRekomendasiByPermohonan);
+
+/**
+ * @openapi
+ * /api/rekomendasi/{permohonanId}/pdf:
+ *   get:
+ *     tags:
+ *       - Rekomendasi & Tanda Tangan QR
+ *     summary: Download / Preview dokumen rekomendasi resmi dalam format PDF berlogo POLRI
+ *     security:
+ *       - BearerAuth: []
+ */
+router.get('/:permohonanId/pdf', generateRekomendasiPdf);
 
 /**
  * @openapi
