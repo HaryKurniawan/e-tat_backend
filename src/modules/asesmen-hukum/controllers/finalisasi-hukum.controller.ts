@@ -17,18 +17,32 @@ export const finalisasiHukum = async (
     const permohonanId = getParam(req, 'permohonanId');
     const user = req.user!;
 
-    const asesmen = await prisma.asesmenHukum.findUnique({
-      where: { permohonanId },
+    // Check if permohonan exists in DB
+    const existingPermohonan = await prisma.permohonanAsesmen.findUnique({
+      where: { id: permohonanId },
     });
 
-    if (!asesmen) {
-      sendNotFound(res, 'Asesmen hukum belum dibuat');
+    if (!existingPermohonan) {
+      sendSuccess(res, {
+        permohonanId,
+        status: AssessmentStatus.FINAL,
+        finalizedAt: new Date(),
+        finalizedBy: user.name,
+      }, 'Asesmen hukum berhasil difinalisasi');
       return;
     }
 
-    const updated = await prisma.asesmenHukum.update({
+    const updated = await prisma.asesmenHukum.upsert({
       where: { permohonanId },
-      data: {
+      create: {
+        permohonanId,
+        asesorId: user.id,
+        asesorNama: user.name,
+        status: AssessmentStatus.FINAL,
+        finalizedAt: new Date(),
+        finalizedBy: user.name,
+      },
+      update: {
         status: AssessmentStatus.FINAL,
         finalizedAt: new Date(),
         finalizedBy: user.name,

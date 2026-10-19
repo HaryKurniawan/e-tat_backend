@@ -13,13 +13,35 @@ export const submitRegistrasi = async (req: Request, res: Response, next: NextFu
   try {
     const data = registrasiSchema.parse(req.body);
 
-    // Cek email duplikat
-    const existing = await prisma.registrasiPengguna.findFirst({
-      where: { email: data.email.toLowerCase() },
+    const emailClean = data.email.toLowerCase().trim();
+
+    // Cek email duplikat di registrasi
+    const existingReg = await prisma.registrasiPengguna.findFirst({
+      where: { email: emailClean },
     });
-    if (existing) {
-      sendError(res, 'Email ini sudah terdaftar', 409);
+    if (existingReg) {
+      sendError(res, 'Email ini sudah terdaftar dalam antrean verifikasi atau sistem', 409);
       return;
+    }
+
+    // Cek email duplikat di tabel user aktif
+    const existingUser = await prisma.user.findUnique({
+      where: { email: emailClean },
+    });
+    if (existingUser) {
+      sendError(res, 'Email ini sudah terdaftar sebagai akun pengguna aktif di sistem', 409);
+      return;
+    }
+
+    // Cek NRP duplikat jika diisi
+    if (data.nrp) {
+      const existingNrp = await prisma.registrasiPengguna.findFirst({
+        where: { nrp: data.nrp.trim(), status: { in: ['pending', 'approved'] } },
+      });
+      if (existingNrp) {
+        sendError(res, `NRP/NIP ${data.nrp.trim()} sudah terdaftar dalam sistem`, 409);
+        return;
+      }
     }
 
     const nomorRegistrasi = await generateNomorRegistrasi(data.instansi);

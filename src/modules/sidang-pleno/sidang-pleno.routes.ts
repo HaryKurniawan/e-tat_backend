@@ -39,18 +39,18 @@ router.post(
  */
 router.post(
   '/:permohonanId/hasil',
-  guardRole([UserRole.ADMIN]),
+  guardRole([UserRole.ADMIN, UserRole.HUKUM, UserRole.MEDIS]),
   simpanHasilPleno
 );
 
 /**
  * @route   POST /api/sidang-pleno/:permohonanId/upload-ba
  * @desc    Mengunggah Berita Acara yang telah ditandatangani
- * @access  ADMIN
+ * @access  ADMIN, HUKUM, MEDIS
  */
 router.post(
   '/:permohonanId/upload-ba',
-  guardRole([UserRole.ADMIN]),
+  guardRole([UserRole.ADMIN, UserRole.HUKUM, UserRole.MEDIS]),
   upload.single('fileBeritaAcara'),
   uploadBeritaAcaraSigned
 );

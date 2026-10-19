@@ -9,6 +9,7 @@ import {
   catatDisposisi,
   tugaskanTimAsesmen,
   lacakPermohonan,
+  cekNikPermohonan,
 } from './permohonan.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { guardAdmin, guardPengajuOrAdmin } from '../../middleware/role.middleware';
@@ -41,6 +42,12 @@ router.get('/lacak/:trackingNumber', lacakPermohonan);
 
 // Private Routes
 router.use(authMiddleware);
+
+/**
+ * GET /api/permohonan/cek-nik/:nik
+ * Pengecekan riwayat rekam jejak NIK di seluruh database e-TAT
+ */
+router.get('/cek-nik/:nik', cekNikPermohonan);
 
 /**
  * @openapi

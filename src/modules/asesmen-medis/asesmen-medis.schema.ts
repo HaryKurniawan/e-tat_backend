@@ -14,26 +14,26 @@ export const hasilUrinSchema = z.object({
 });
 
 export const saveAsesmenMedisSchema = z.object({
-  kondisiFisik: z.string().optional(),
-  tekananDarah: z.string().optional(),
-  denyutNadi: z.string().optional(),
+  kondisiFisik: z.string().max(500).optional(),
+  tekananDarah: z.string().max(20).optional(),
+  denyutNadi: z.string().max(10).optional(),
   tandaBekasSuntikan: z.boolean().default(false),
-  komorbiditasMedis: z.string().optional(),
-  kondisiPsikologis: z.string().optional(),
+  komorbiditasMedis: z.string().max(500).optional(),
+  kondisiPsikologis: z.string().max(2000).optional(),
   
   riwayatZat: z.array(riwayatZatSchema).optional(),
   hasilUrin: z.array(hasilUrinSchema).optional(),
 
   instrumen: z.string().default('ASSIST'),
-  skorInstrumen: z.number().optional(),
-  tingkatRisikoInstrumen: z.string().optional(),
+  skorInstrumen: z.number().nonnegative().optional(),
+  tingkatRisikoInstrumen: z.string().max(100).optional(),
 
-  diagnosisKlinisIcd: z.string().optional(),
-  interpretasiKlinis: z.string().optional(),
-  kebutuhanRawat: z.string().optional(),
-  durasiUsulanBulan: z.number().int().optional(),
-  catatanKhusus: z.string().optional(),
-  permintaanPemeriksaanTambahan: z.string().optional(),
+  diagnosisKlinisIcd: z.string().max(200).optional(),
+  interpretasiKlinis: z.string().max(2000).optional(),
+  kebutuhanRawat: z.string().max(100).optional(),
+  durasiUsulanBulan: z.number().int().positive().nullable().optional(),
+  catatanKhusus: z.string().max(1000).optional(),
+  permintaanPemeriksaanTambahan: z.string().max(1000).optional(),
 });
 
 export const asamDimensiSchema = z.object({

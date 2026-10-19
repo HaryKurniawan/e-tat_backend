@@ -5,11 +5,18 @@ import {
   submitRegistrasi,
   approveRegistrasi,
   rejectRegistrasi,
+  checkStatusRegistrasi,
 } from './registrasi.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { guardAdmin } from '../../middleware/role.middleware';
 
 const router = Router();
+
+/**
+ * GET /api/registrasi/status/:identifier
+ * Publik: Cek status pendaftaran akun berdasarkan email atau nomorRegistrasi atau NRP
+ */
+router.get('/status/:identifier', checkStatusRegistrasi);
 
 /**
  * @openapi

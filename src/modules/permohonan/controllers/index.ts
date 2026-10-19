@@ -7,3 +7,4 @@ export * from './minta-perbaikan.controller';
 export * from './catat-disposisi.controller';
 export * from './tugaskan-tim-asesmen.controller';
 export * from './lacak-permohonan.controller';
+export * from './cek-nik.controller';

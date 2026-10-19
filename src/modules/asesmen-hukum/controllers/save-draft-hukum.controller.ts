@@ -49,6 +49,7 @@ export const saveDraftHukum = async (
 
     const roleAnalisis = normalizeAnalisisPeran(body.analisisPeran);
     const hukumRekomendasi = normalizeRekomendasiHukum(body.rekomendasiHukum);
+    const catatanFinal = body.catatanKlarifikasi || body.catatanKhusus;
 
     const asesmen = await prisma.asesmenHukum.upsert({
       where: { permohonanId },
@@ -67,7 +68,7 @@ export const saveDraftHukum = async (
         analisisBarangBukti: body.analisisBarangBukti,
         kesimpulanHukum: body.kesimpulanHukum,
         rekomendasiHukum: hukumRekomendasi,
-        catatanKlarifikasi: body.catatanKlarifikasi,
+        catatanKlarifikasi: catatanFinal,
       },
       update: {
         pernahDitangkap: body.pernahDitangkap,
@@ -80,9 +81,42 @@ export const saveDraftHukum = async (
         analisisBarangBukti: body.analisisBarangBukti,
         kesimpulanHukum: body.kesimpulanHukum,
         rekomendasiHukum: hukumRekomendasi,
-        catatanKlarifikasi: body.catatanKlarifikasi,
+        catatanKlarifikasi: catatanFinal,
       },
     });
+
+    // Sinkronisasi data perkara jika diperbarui atau diverifikasi tim hukum
+    const perkaraUpdateData: any = {};
+    if (body.nomorLp) perkaraUpdateData.nomorLaporanPolisi = body.nomorLp;
+    if (body.pasalSangkaan) perkaraUpdateData.pasalDipersangkakan = body.pasalSangkaan;
+    if (body.lokasiTkp) perkaraUpdateData.tempatKejadianPerkara = body.lokasiTkp;
+    if (body.kronologiPenangkapan) perkaraUpdateData.kronologiSingkat = body.kronologiPenangkapan;
+
+    if (Object.keys(perkaraUpdateData).length > 0) {
+      await prisma.perkaraHukum.updateMany({
+        where: { permohonanId },
+        data: perkaraUpdateData,
+      });
+    }
+
+    if (body.totalBeratBersihGram !== undefined) {
+      const beratNum = typeof body.totalBeratBersihGram === 'string'
+        ? parseFloat(body.totalBeratBersihGram)
+        : Number(body.totalBeratBersihGram);
+
+      if (!isNaN(beratNum) && beratNum >= 0) {
+        const perkara = await prisma.perkaraHukum.findUnique({
+          where: { permohonanId },
+          include: { barangBuktiList: true },
+        });
+        if (perkara && perkara.barangBuktiList.length > 0) {
+          await prisma.barangBukti.update({
+            where: { id: perkara.barangBuktiList[0].id },
+            data: { beratBersihGram: beratNum },
+          });
+        }
+      }
+    }
 
     // Update status permohonan legalStatus
     await prisma.permohonanAsesmen.update({
