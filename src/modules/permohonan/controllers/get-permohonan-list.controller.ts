@@ -57,8 +57,16 @@ export const getPermohonanList = async (
             },
           },
           asesmenHukum: true,
-          sidangPleno: true,
-          rekomendasiResmi: true,
+          sidangPleno: {
+            include: {
+              daftarHadir: true,
+            },
+          },
+          rekomendasiResmi: {
+            include: {
+              daftarPengesah: true,
+            },
+          },
           tindakLanjutLayanan: true,
         },
       }),

@@ -36,6 +36,17 @@ const router = Router();
  */
 router.get('/verifikasi/:qrCode', verifikasiPublikQr);
 
+/**
+ * @openapi
+ * /api/rekomendasi/{permohonanId}/pdf:
+ *   get:
+ *     tags:
+ *       - Rekomendasi & Tanda Tangan QR
+ *     summary: Download / Preview dokumen rekomendasi resmi dalam format PDF berlogo POLRI (Publik / Tersangka)
+ *     security: []
+ */
+router.get('/:permohonanId/pdf', generateRekomendasiPdf);
+
 // Rute lainnya membutuhkan autentikasi
 router.use(authMiddleware);
 
