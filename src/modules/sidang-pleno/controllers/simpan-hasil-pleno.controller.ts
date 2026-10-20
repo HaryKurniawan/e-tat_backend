@@ -119,25 +119,25 @@ export const simpanHasilPleno = async (
             daftarPengesah: {
               create: [
                 {
-                  nama: 'Kompol Arya Wicaksono, S.I.K.',
+                  nama: '[TEST] Ketua Tim Asesmen Terpadu',
                   jabatan: 'Ketua Tim Asesmen Terpadu',
                   instansi: 'Polda Kalimantan Timur',
                   status: 'menunggu',
                 },
                 {
-                  nama: 'dr. Ratna Sp.KJ',
+                  nama: '[TEST] Dokter Asesor Medis TAT',
                   jabatan: 'Asesor Medis',
                   instansi: 'BNNP Kalimantan Timur',
                   status: 'menunggu',
                 },
                 {
-                  nama: 'Kompol Bambang Sutedjo, S.H.',
+                  nama: '[TEST] Asesor Hukum Polri TAT',
                   jabatan: 'Asesor Hukum Polri',
                   instansi: 'Ditresnarkoba Polda Kaltim',
                   status: 'menunggu',
                 },
                 {
-                  nama: 'Agus Pratama, S.H., M.H.',
+                  nama: '[TEST] Jaksa Asesor Hukum TAT',
                   jabatan: 'Asesor Hukum Kejaksaan',
                   instansi: 'Kejaksaan Tinggi Kaltim',
                   status: 'menunggu',

@@ -37,7 +37,7 @@ export async function seedAktifData(prisma: PrismaClient) {
   }) || pengaju;
 
   const hukumUser = await prisma.user.findFirst({
-    where: { email: 'hukum@gmail.com' },
+    where: { email: 'etatsiappulih@gmail.com' },
   }) || pengaju;
 
   const today = new Date();

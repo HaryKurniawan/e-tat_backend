@@ -73,14 +73,14 @@ async function main() {
   console.log('✔ User Asesor Medis created/updated (password: password123):', medisUser.email);
 
   const hukumUser = await prisma.user.upsert({
-    where: { email: 'hukum@gmail.com' },
+    where: { email: 'etatsiappulih@gmail.com' },
     update: {
       password: passwordHash,
       name: '[TEST] Jaksa Asesor Hukum TAT',
       position: 'Jaksa / Penelaah Hukum TAT (Akun Uji)'
     },
     create: {
-      email: 'hukum@gmail.com',
+      email: 'etatsiappulih@gmail.com',
       password: passwordHash,
       role: UserRole.HUKUM,
       name: '[TEST] Jaksa Asesor Hukum TAT',
@@ -276,7 +276,7 @@ async function main() {
       kategoriInstansi: KategoriInstansi.Kejaksaan,
       wilayahHukum: 'Kejati DKI Jakarta',
       alamatKantor: 'Jl. Rasuna Said No. 5, Jakarta Selatan',
-      email: 'hukum@gmail.com',
+      email: 'etatsiappulih@gmail.com',
       phone: '081399887766',
       status: 'approved' as const,
       catatanAdmin: 'SK Jaksa dan Penugasan TAT Terverifikasi.',
@@ -334,7 +334,7 @@ async function main() {
   console.log('1. Sekretariat (Admin) : admin@gmail.com   | password123');
   console.log('2. Pengaju (Penyidik)  : pengaju@gmail.com | password123');
   console.log('3. Asesor Medis        : medis@gmail.com   | password123');
-  console.log('4. Asesor Hukum        : hukum@gmail.com   | password123');
+  console.log('4. Asesor Hukum        : etatsiappulih@gmail.com | password123');
   console.log('--------------------------------------------------');
 }
 

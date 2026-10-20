@@ -170,10 +170,10 @@ export const generateRekomendasiPdf = async (
     doc.moveDown(0.8);
 
     const signers = [
-      { role: 'Dokter Asesor Medis', name: m?.asesorNama || 'dr. Haryono (BNNK Samarinda)', nip: 'NIP. 197805122003121002' },
-      { role: 'Penelaah Hukum TAT', name: h?.asesorNama || 'Tim Penelaah Hukum BNNP', nip: 'NRP. 82041203' },
-      { role: 'Penyidik Satresnarkoba', name: permohonan.perkara?.namaPenyidik || 'Bripka Bambang Supriyadi', nip: 'NRP. 85070912' },
-      { role: 'Ketua Tim Asesmen Terpadu', name: 'Kombes Pol. Drs. Hendra Kusuma, M.Si.', nip: 'NRP. 69120415' }
+      { role: 'Dokter Asesor Medis', name: m?.asesorNama || '[TEST] Dokter Asesor Medis TAT', nip: 'NIP. 197805122003121002' },
+      { role: 'Penelaah Hukum TAT', name: h?.asesorNama || '[TEST] Jaksa Asesor Hukum TAT', nip: 'NRP. 82041203' },
+      { role: 'Penyidik Satresnarkoba', name: permohonan.perkara?.namaPenyidik || '[TEST] Penyidik Pengaju Satresnarkoba', nip: 'NRP. 85070912' },
+      { role: 'Ketua Tim Asesmen Terpadu', name: '[TEST] Ketua Tim Asesmen Terpadu', nip: 'NRP. 69120415' }
     ];
 
     const colWidth = 120;
