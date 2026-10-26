@@ -16,7 +16,12 @@ export const hasilUrinSchema = z.object({
 export const saveAsesmenMedisSchema = z.object({
   kondisiFisik: z.string().max(500).optional(),
   tekananDarah: z.string().max(20).optional(),
-  denyutNadi: z.string().max(10).optional(),
+  denyutNadi: z.string().max(20).optional(),
+  pernapasan: z.string().max(20).optional(),
+  suhuTubuh: z.string().max(20).optional(),
+  needleTracks: z.string().max(50).optional(),
+  kondisiIntoksikasi: z.string().max(50).optional(),
+  fasilitasRujukan: z.string().max(200).optional(),
   tandaBekasSuntikan: z.boolean().default(false),
   komorbiditasMedis: z.string().max(500).optional(),
   kondisiPsikologis: z.string().max(2000).optional(),

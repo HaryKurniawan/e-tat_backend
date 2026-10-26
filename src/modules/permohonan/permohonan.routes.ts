@@ -13,6 +13,7 @@ import {
 } from './permohonan.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { guardAdmin, guardPengajuOrAdmin } from '../../middleware/role.middleware';
+import { getSuratJawabanPdf, kirimUlangSuratJawaban } from '../surat-jawaban/surat-jawaban.controller';
 
 const router = Router();
 
@@ -281,5 +282,12 @@ router.post('/:id/disposisi', guardAdmin, catatDisposisi);
  *         description: Tim Asesor berhasil ditugaskan
  */
 router.post('/:id/tugaskan', guardAdmin, tugaskanTimAsesmen);
+
+/**
+ * GET  /api/permohonan/:id/surat-jawaban/pdf   -> lihat/unduh PDF (Admin & Pengaju pemilik berkas)
+ * POST /api/permohonan/:id/surat-jawaban/kirim -> kirim ulang ke email pengaju (Admin)
+ */
+router.get('/:id/surat-jawaban/pdf', getSuratJawabanPdf);
+router.post('/:id/surat-jawaban/kirim', guardAdmin, kirimUlangSuratJawaban);
 
 export default router;

@@ -328,6 +328,12 @@ model PermohonanAsesmen {
   deliveryStatus    DeliveryStatus    @default(NOT_ISSUED)
   followupStatus    FollowupStatus    @default(NOT_APPLICABLE_YET)
 
+  // Surat Jawaban ke Pengaju (dibuat sekali saat berkas masuk tahap asesmen)
+  suratJawabanNomor      String?
+  suratJawabanTanggal    DateTime?
+  suratJawabanDikirimAt  DateTime?
+  suratJawabanEmailTo    String?
+
   // SLA
   tenggatSlaTanggal    DateTime?
   isMendekatiTenggat   Boolean   @default(false)
@@ -597,6 +603,11 @@ model AsesmenMedis {
   kondisiFisik           String?
   tekananDarah           String?
   denyutNadi             String?
+  pernapasan             String?
+  suhuTubuh              String?
+  needleTracks           String?
+  kondisiIntoksikasi     String?
+  fasilitasRujukan       String?
   tandaBekasSuntikan     Boolean  @default(false)
   komorbiditasMedis      String?
   kondisiPsikologis      String?

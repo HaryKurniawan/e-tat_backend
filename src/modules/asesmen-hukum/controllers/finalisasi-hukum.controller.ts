@@ -32,21 +32,31 @@ export const finalisasiHukum = async (
       return;
     }
 
+    const body = req.body || {};
+    const dataPayload: any = {
+      status: AssessmentStatus.FINAL,
+      finalizedAt: new Date(),
+      finalizedBy: user.name,
+    };
+
+    if (body.analisisPeran !== undefined) dataPayload.analisisPeran = body.analisisPeran;
+    if (body.analisisBarangBukti !== undefined) dataPayload.analisisBarangBukti = body.analisisBarangBukti;
+    if (body.rekomendasiHukum !== undefined) dataPayload.rekomendasiHukum = body.rekomendasiHukum;
+    if (body.catatanKhusus !== undefined) dataPayload.catatanKhusus = body.catatanKhusus;
+    if (body.pernahDitangkap !== undefined) dataPayload.pernahDitangkap = body.pernahDitangkap;
+    if (body.keteranganPerkaraLalu !== undefined) dataPayload.keteranganPerkaraLalu = body.keteranganPerkaraLalu;
+    if (body.terverifikasiDatabase !== undefined) dataPayload.terverifikasiDatabase = body.terverifikasiDatabase;
+    if (body.kesimpulanHukum !== undefined) dataPayload.kesimpulanHukum = body.kesimpulanHukum;
+
     const updated = await prisma.asesmenHukum.upsert({
       where: { permohonanId },
       create: {
         permohonanId,
         asesorId: user.id,
         asesorNama: user.name,
-        status: AssessmentStatus.FINAL,
-        finalizedAt: new Date(),
-        finalizedBy: user.name,
+        ...dataPayload,
       },
-      update: {
-        status: AssessmentStatus.FINAL,
-        finalizedAt: new Date(),
-        finalizedBy: user.name,
-      },
+      update: dataPayload,
     });
 
     await prisma.permohonanAsesmen.update({

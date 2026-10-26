@@ -27,6 +27,17 @@ export const saveDraftMedis = async (
       return;
     }
 
+    const tandaBekasSuntikan = body.needleTracks
+      ? body.needleTracks !== 'tidak_ada'
+      : body.tandaBekasSuntikan;
+    const vitalExtra = {
+      pernapasan: body.pernapasan,
+      suhuTubuh: body.suhuTubuh,
+      needleTracks: body.needleTracks,
+      kondisiIntoksikasi: body.kondisiIntoksikasi,
+      fasilitasRujukan: body.fasilitasRujukan,
+    };
+
     const asesmen = await prisma.asesmenMedis.upsert({
       where: { permohonanId },
       create: {
@@ -37,7 +48,8 @@ export const saveDraftMedis = async (
         kondisiFisik: body.kondisiFisik,
         tekananDarah: body.tekananDarah,
         denyutNadi: body.denyutNadi,
-        tandaBekasSuntikan: body.tandaBekasSuntikan,
+        ...vitalExtra,
+        tandaBekasSuntikan,
         komorbiditasMedis: body.komorbiditasMedis,
         kondisiPsikologis: body.kondisiPsikologis,
         instrumen: body.instrumen,
@@ -54,7 +66,8 @@ export const saveDraftMedis = async (
         kondisiFisik: body.kondisiFisik,
         tekananDarah: body.tekananDarah,
         denyutNadi: body.denyutNadi,
-        tandaBekasSuntikan: body.tandaBekasSuntikan,
+        ...vitalExtra,
+        tandaBekasSuntikan,
         komorbiditasMedis: body.komorbiditasMedis,
         kondisiPsikologis: body.kondisiPsikologis,
         instrumen: body.instrumen,

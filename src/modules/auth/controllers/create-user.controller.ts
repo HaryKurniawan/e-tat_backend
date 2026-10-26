@@ -71,10 +71,10 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
  */
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const roleQuery = req.query.role as any;
+    const roleQuery = req.query.role as string | undefined;
     const where: any = { isActive: true };
     if (roleQuery) {
-      where.role = roleQuery;
+      where.role = roleQuery.toUpperCase();
     }
 
     const users = await prisma.user.findMany({

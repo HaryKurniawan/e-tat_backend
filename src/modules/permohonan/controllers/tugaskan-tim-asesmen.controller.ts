@@ -5,6 +5,7 @@ import { penugasanSchema } from '../permohonan.schema';
 import { getParam } from '../../../utils/param.util';
 import { logAudit } from '../../../utils/audit.util';
 import { sendPenugasanHukumEmail, sendPenugasanMedisEmail } from '../../../services/email.service';
+import { kirimSuratJawabanKePengaju } from '../../surat-jawaban/surat-jawaban.service';
 
 /**
  * POST /api/permohonan/:id/tugaskan
@@ -50,7 +51,7 @@ export const tugaskanTimAsesmen = async (
 
       await tx.permohonanAsesmen.update({
         where: { id },
-        data: { applicationStatus: 'SCHEDULED' },
+        data: { applicationStatus: 'ASSESSMENT_ACTIVE' },
       });
     });
 
@@ -120,6 +121,26 @@ export const tugaskanTimAsesmen = async (
         console.error('❌ Gagal mengirim notifikasi email penugasan hukum:', err);
       });
     }
+
+    // Kirim Surat Jawaban (PDF) ke email Pengaju - sekali saja saat berkas masuk Step 4 (non-blocking)
+    kirimSuratJawabanKePengaju(id)
+      .then(async (result) => {
+        if (result.sent) {
+          await logAudit({
+            actorId: req.user!.id,
+            actorNama: req.user!.name,
+            actorPeran: req.user!.role,
+            permohonanId: id,
+            aksi: 'KIRIM_SURAT_JAWABAN',
+            rincian: `Surat jawaban (PDF) dikirim ke email pengaju: ${result.email}`,
+          });
+        } else if (!result.skipped) {
+          console.warn('⚠️ Surat jawaban tidak terkirim:', result.reason);
+        }
+      })
+      .catch((err) => {
+        console.error('❌ Gagal mengirim surat jawaban ke pengaju:', err);
+      });
 
     sendSuccess(res, updated, 'Tim asesmen berhasil ditugaskan');
   } catch (err) {
