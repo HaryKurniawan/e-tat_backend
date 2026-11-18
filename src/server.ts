@@ -15,9 +15,15 @@ const server = app.listen(PORT, async () => {
   try {
     await prisma.$connect();
     console.log('✔ Database connection established successfully');
-  } catch (error) {
-    console.error('✘ Failed to connect to database:', error);
-    console.log('ℹ Ensure your PostgreSQL database is running and DATABASE_URL is configured in .env');
+  } catch (error: any) {
+    console.error('✘ Failed to connect to database:', error?.message || error);
+    if (String(error).includes('tenant') || String(error).includes('not found') || String(error).includes('mvaempwaprqjqdpmwrpf')) {
+      console.log('⚠️ [SUPABASE CLOUD]: Proyek Supabase kemungkinan sedang PAUSED (inaktif).');
+      console.log('   👉 Buka https://supabase.com/dashboard lalu klik "Restore project".');
+      console.log('   👉 Atau gunakan database lokal dengan: npm run env:local');
+    } else {
+      console.log('ℹ Ensure your PostgreSQL database is running and DATABASE_URL is configured in .env');
+    }
   }
 });
 

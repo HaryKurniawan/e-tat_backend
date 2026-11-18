@@ -18,26 +18,31 @@ export async function seedAktifData(prisma: PrismaClient) {
 
   // 1. Cari users canonical
   const pengaju = await prisma.user.findFirst({
-    where: { email: 'pengaju@gmail.com' },
+    where: {
+      OR: [
+        { email: 'pengaju.etatsiappulih@gmail.com' },
+        { email: 'pengaju@gmail.com' }
+      ]
+    },
   });
 
   if (!pengaju) {
-    console.warn('⚠️ User pengaju pengaju@gmail.com tidak ditemukan. Lewati seeding aktif.');
+    console.warn('⚠️ User pengaju pengaju.etatsiappulih@gmail.com tidak ditemukan. Lewati seeding aktif.');
     return;
   }
 
   const pengajuUser = pengaju;
 
   const adminUser = await prisma.user.findFirst({
-    where: { email: 'admin@gmail.com' },
+    where: { email: 'etatsiappulih@gmail.com' },
   }) || pengaju;
 
   const medisUser = await prisma.user.findFirst({
-    where: { email: 'medis@gmail.com' },
+    where: { email: 'medis.etatsiappulih@gmail.com' },
   }) || pengaju;
 
   const hukumUser = await prisma.user.findFirst({
-    where: { email: 'etatsiappulih@gmail.com' },
+    where: { email: 'hukum.etatsiappulih@gmail.com' },
   }) || pengaju;
 
   const today = new Date();

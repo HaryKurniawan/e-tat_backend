@@ -4,6 +4,8 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "env:local": "node switch-env.js local",
+    "env:prod": "node switch-env.js prod",
     "build": "prisma generate && tsc",
     "postinstall": "prisma generate",
     "start": "node dist/server.js",
@@ -34,6 +36,7 @@
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
+    "google-auth-library": "^11.3.4",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.4.0",

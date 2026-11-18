@@ -13,14 +13,15 @@ async function main() {
 
   // 1. Seed 4 Canonical Role Users (All with password: password123)
   const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@gmail.com' },
+    where: { email: 'etatsiappulih@gmail.com' },
     update: {
       password: passwordHash,
+      role: UserRole.ADMIN,
       name: '[TEST] Admin Sekretariat TAT',
       position: 'Petugas Verifikasi & Sekretariat TAT (Akun Uji)'
     },
     create: {
-      email: 'admin@gmail.com',
+      email: 'etatsiappulih@gmail.com',
       password: passwordHash,
       role: UserRole.ADMIN,
       name: '[TEST] Admin Sekretariat TAT',
@@ -33,14 +34,15 @@ async function main() {
   console.log('✔ User Sekretariat (Admin) created/updated (password: password123):', adminUser.email);
 
   const pengajuUser = await prisma.user.upsert({
-    where: { email: 'pengaju@gmail.com' },
+    where: { email: 'pengaju.etatsiappulih@gmail.com' },
     update: {
       password: passwordHash,
+      role: UserRole.PENGAJU,
       name: '[TEST] Penyidik Pengaju Satresnarkoba',
       position: 'Penyidik Pemohon Asesmen TAT (Akun Uji)'
     },
     create: {
-      email: 'pengaju@gmail.com',
+      email: 'pengaju.etatsiappulih@gmail.com',
       password: passwordHash,
       role: UserRole.PENGAJU,
       name: '[TEST] Penyidik Pengaju Satresnarkoba',
@@ -53,14 +55,15 @@ async function main() {
   console.log('✔ User Pengaju (Penyidik) created/updated (password: password123):', pengajuUser.email);
 
   const medisUser = await prisma.user.upsert({
-    where: { email: 'medis@gmail.com' },
+    where: { email: 'medis.etatsiappulih@gmail.com' },
     update: {
       password: passwordHash,
+      role: UserRole.MEDIS,
       name: '[TEST] Dokter Asesor Medis TAT',
       position: 'Dokter Pemeriksa Medis TAT (Akun Uji)'
     },
     create: {
-      email: 'medis@gmail.com',
+      email: 'medis.etatsiappulih@gmail.com',
       password: passwordHash,
       role: UserRole.MEDIS,
       name: '[TEST] Dokter Asesor Medis TAT',
@@ -73,14 +76,15 @@ async function main() {
   console.log('✔ User Asesor Medis created/updated (password: password123):', medisUser.email);
 
   const hukumUser = await prisma.user.upsert({
-    where: { email: 'etatsiappulih@gmail.com' },
+    where: { email: 'hukum.etatsiappulih@gmail.com' },
     update: {
       password: passwordHash,
+      role: UserRole.HUKUM,
       name: '[TEST] Jaksa Asesor Hukum TAT',
       position: 'Jaksa / Penelaah Hukum TAT (Akun Uji)'
     },
     create: {
-      email: 'etatsiappulih@gmail.com',
+      email: 'hukum.etatsiappulih@gmail.com',
       password: passwordHash,
       role: UserRole.HUKUM,
       name: '[TEST] Jaksa Asesor Hukum TAT',
@@ -242,7 +246,7 @@ async function main() {
       kategoriInstansi: KategoriInstansi.Polres_Polresta,
       wilayahHukum: 'Polda Metro Jaya',
       alamatKantor: 'Jl. Kramat Raya No. 61, Jakarta Pusat',
-      email: 'pengaju@gmail.com',
+      email: 'pengaju.etatsiappulih@gmail.com',
       phone: '081298765432',
       status: 'approved' as const,
       catatanAdmin: 'Dokumen KTP, KTA, dan Surat Penunjukan terverifikasi sah.',
@@ -259,7 +263,7 @@ async function main() {
       kategoriInstansi: KategoriInstansi.BNNK_BNNP,
       wilayahHukum: 'DKI Jakarta',
       alamatKantor: 'Jl. MT Haryono No. 11, Jakarta Timur',
-      email: 'medis@gmail.com',
+      email: 'medis.etatsiappulih@gmail.com',
       phone: '081311223344',
       status: 'approved' as const,
       catatanAdmin: 'SIP dan Surat Penugasan Tim Medis TAT Valid.',
@@ -276,40 +280,12 @@ async function main() {
       kategoriInstansi: KategoriInstansi.Kejaksaan,
       wilayahHukum: 'Kejati DKI Jakarta',
       alamatKantor: 'Jl. Rasuna Said No. 5, Jakarta Selatan',
-      email: 'etatsiappulih@gmail.com',
+      email: 'hukum.etatsiappulih@gmail.com',
       phone: '081399887766',
       status: 'approved' as const,
       catatanAdmin: 'SK Jaksa dan Penugasan TAT Terverifikasi.',
       approvedAt: new Date(),
       approvedById: adminUser.id,
-    },
-    {
-      nomorRegistrasi: 'REG-TAT/2026/POLSEK-004',
-      namaLengkap: '[TEST] Penyidik Polsek Samarinda',
-      pangkat: 'Bripka',
-      nrp: '88081727',
-      jabatan: 'Kanit Reskrim (Akun Uji)',
-      instansi: 'Polsek Samarinda Kota',
-      kategoriInstansi: KategoriInstansi.Polsek,
-      wilayahHukum: 'Kota Samarinda / Polda Kaltim',
-      alamatKantor: 'Jl. Bhayangkara No. 1, Samarinda',
-      email: 'penyidik.polsek.samarinda@polri.go.id',
-      phone: '081399887700',
-      status: 'pending' as const,
-    },
-    {
-      nomorRegistrasi: 'REG-TAT/2026/POLRES-005',
-      namaLengkap: '[TEST] Penyidik Resnarkoba Kukar',
-      pangkat: 'AKP',
-      nrp: '78091244',
-      jabatan: 'Kasat Resnarkoba (Akun Uji)',
-      instansi: 'Polres Kutai Kartanegara',
-      kategoriInstansi: KategoriInstansi.Polres_Polresta,
-      wilayahHukum: 'Polda Kaltim',
-      alamatKantor: 'Jl. Wolter Monginsidi No. 1, Tenggarong',
-      email: 'satnarkoba.kukar@polri.go.id',
-      phone: '081255443322',
-      status: 'pending' as const,
     },
   ];
 
@@ -331,10 +307,10 @@ async function main() {
   console.log('✨ Seeding completed successfully!');
   console.log('--------------------------------------------------');
   console.log('Login credentials for all 4 roles:');
-  console.log('1. Sekretariat (Admin) : admin@gmail.com   | password123');
-  console.log('2. Pengaju (Penyidik)  : pengaju@gmail.com | password123');
-  console.log('3. Asesor Medis        : medis@gmail.com   | password123');
-  console.log('4. Asesor Hukum        : etatsiappulih@gmail.com | password123');
+  console.log('1. Sekretariat (Admin) : etatsiappulih@gmail.com        | password123');
+  console.log('2. Pengaju (Penyidik)  : pengaju.etatsiappulih@gmail.com | password123');
+  console.log('3. Asesor Medis        : medis.etatsiappulih@gmail.com   | password123');
+  console.log('4. Asesor Hukum        : hukum.etatsiappulih@gmail.com   | password123');
   console.log('--------------------------------------------------');
 }
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login, refresh, logout, getMe, createUser, getAllUsers } from './auth.controller';
+import { login, googleLogin, refresh, logout, getMe, createUser, getAllUsers } from './auth.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { guardAdmin } from '../../middleware/role.middleware';
 
@@ -33,6 +33,7 @@ const router = Router();
  *         description: Kredensial tidak valid
  */
 router.post('/login', login);
+router.post('/google', googleLogin);
 
 /**
  * @openapi

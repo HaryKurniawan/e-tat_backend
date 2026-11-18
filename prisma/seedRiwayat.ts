@@ -13,28 +13,35 @@ import {
 /**
  * Seeder khusus untuk data Riwayat & Arsip Asesmen TAT (/dashboard/riwayat)
  * Data 100% tersimpan di database backend PostgreSQL & terhubung ke 4 canonical user:
- * - admin@gmail.com
- * - pengaju@gmail.com
- * - medis@gmail.com
- * - etatsiappulih@gmail.com
+ * - etatsiappulih@gmail.com (ADMIN)
+ * - pengaju.etatsiappulih@gmail.com (PENGAJU)
+ * - medis.etatsiappulih@gmail.com (MEDIS)
+ * - hukum.etatsiappulih@gmail.com (HUKUM)
  */
 export async function seedRiwayatData(prisma: PrismaClient) {
   console.log('📦 Seeding Riwayat & Arsip Asesmen TAT data (Database)...');
 
   const pengajuUser =
-    (await prisma.user.findFirst({ where: { email: 'pengaju@gmail.com' } })) ||
+    (await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: 'pengaju.etatsiappulih@gmail.com' },
+          { email: 'pengaju@gmail.com' }
+        ]
+      }
+    })) ||
     (await prisma.user.findFirst({ where: { role: 'PENGAJU' } }));
 
   const adminUser =
-    (await prisma.user.findFirst({ where: { email: 'admin@gmail.com' } })) ||
+    (await prisma.user.findFirst({ where: { email: 'etatsiappulih@gmail.com' } })) ||
     (await prisma.user.findFirst({ where: { role: 'ADMIN' } }));
 
   const medisUser =
-    (await prisma.user.findFirst({ where: { email: 'medis@gmail.com' } })) ||
+    (await prisma.user.findFirst({ where: { email: 'medis.etatsiappulih@gmail.com' } })) ||
     (await prisma.user.findFirst({ where: { role: 'MEDIS' } }));
 
   const hukumUser =
-    (await prisma.user.findFirst({ where: { email: 'etatsiappulih@gmail.com' } })) ||
+    (await prisma.user.findFirst({ where: { email: 'hukum.etatsiappulih@gmail.com' } })) ||
     (await prisma.user.findFirst({ where: { role: 'HUKUM' } }));
 
   if (!pengajuUser || !adminUser || !medisUser || !hukumUser) {
