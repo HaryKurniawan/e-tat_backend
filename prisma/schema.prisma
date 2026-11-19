@@ -246,24 +246,24 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Profile details
-  name       String
-  nip        String?  // NIP/NRP/ID Kedinasan
-  agency     String?  // Instansi
-  position   String?  // Jabatan
-  phone      String?
-  avatarUrl  String?
+  name      String
+  nip       String? // NIP/NRP/ID Kedinasan
+  agency    String? // Instansi
+  position  String? // Jabatan
+  phone     String?
+  avatarUrl String?
 
   // Relations
-  permohonanList       PermohonanAsesmen[]  @relation("PengajuRelation")
-  asesmenMedis         AsesmenMedis[]
-  asesmenHukum         AsesmenHukum[]
-  timAsesmenSebagaiMedis  TimAsesmen[]     @relation("AsesorMedisRelation")
-  timAsesmenSebagaiHukum  TimAsesmen[]     @relation("AsesorHukumRelation")
-  timAsesmenSebagaiAdmin  TimAsesmen[]     @relation("SekretariatRelation")
-  registrasiterdaftar  RegistrasiPengguna[] @relation("ApprovedByRelation")
-  klarifikasiDari      Klarifikasi[]        @relation("KlarifikasiDariRelation")
+  permohonanList              PermohonanAsesmen[]    @relation("PengajuRelation")
+  asesmenMedis                AsesmenMedis[]
+  asesmenHukum                AsesmenHukum[]
+  timAsesmenSebagaiMedis      TimAsesmen[]           @relation("AsesorMedisRelation")
+  timAsesmenSebagaiHukum      TimAsesmen[]           @relation("AsesorHukumRelation")
+  timAsesmenSebagaiAdmin      TimAsesmen[]           @relation("SekretariatRelation")
+  registrasiterdaftar         RegistrasiPengguna[]   @relation("ApprovedByRelation")
+  klarifikasiDari             Klarifikasi[]          @relation("KlarifikasiDariRelation")
   prasyaratPemeriksaanCatatan PrasyaratPemeriksaan[] @relation("PetugasPenerimaPrasyarat")
-  auditLogs            AuditLog[]
+  auditLogs                   AuditLog[]
 
   @@map("users")
 }
@@ -275,7 +275,7 @@ model RegistrasiPengguna {
   tanggalDaftar    DateTime         @default(now())
   namaLengkap      String
   pangkat          String?
-  nrp              String           // NRP / NIP
+  nrp              String // NRP / NIP
   jabatan          String
   instansi         String
   kategoriInstansi KategoriInstansi
@@ -294,11 +294,11 @@ model RegistrasiPengguna {
   suratPenunjukanName String?
 
   // Status persetujuan
-  status        RegistrasiStatus @default(pending)
-  catatanAdmin  String?
-  approvedAt    DateTime?
-  approvedById  String?
-  approvedBy    User?            @relation("ApprovedByRelation", fields: [approvedById], references: [id])
+  status       RegistrasiStatus @default(pending)
+  catatanAdmin String?
+  approvedAt   DateTime?
+  approvedById String?
+  approvedBy   User?            @relation("ApprovedByRelation", fields: [approvedById], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -311,15 +311,15 @@ model RegistrasiPengguna {
 // =====================================================================
 
 model PermohonanAsesmen {
-  id                String            @id @default(uuid())
-  trackingNumber    String?           @unique // Pre-registration tracking (publik)
-  nomorPermohonan   String            @unique // TAT/2026/09/089 (setelah APPROVED)
-  tanggalPengajuan  DateTime          @default(now())
-  revision          Int               @default(0)
+  id               String   @id @default(uuid())
+  trackingNumber   String?  @unique // Pre-registration tracking (publik)
+  nomorPermohonan  String   @unique // TAT/2026/09/089 (setelah APPROVED)
+  tanggalPengajuan DateTime @default(now())
+  revision         Int      @default(0)
 
-  jenisPengajuan      JenisPengajuan?
-  metodePelaksanaan   MetodePelaksanaan?
-  satuanKerjaTujuan   String?
+  jenisPengajuan    JenisPengajuan?
+  metodePelaksanaan MetodePelaksanaan?
+  satuanKerjaTujuan String?
 
   // Status utama (4 kanonis)
   applicationStatus ApplicationStatus @default(DRAFT)
@@ -329,20 +329,20 @@ model PermohonanAsesmen {
   followupStatus    FollowupStatus    @default(NOT_APPLICABLE_YET)
 
   // Surat Jawaban ke Pengaju (dibuat sekali saat berkas masuk tahap asesmen)
-  suratJawabanNomor      String?
-  suratJawabanTanggal    DateTime?
-  suratJawabanDikirimAt  DateTime?
-  suratJawabanEmailTo    String?
+  suratJawabanNomor     String?
+  suratJawabanTanggal   DateTime?
+  suratJawabanDikirimAt DateTime?
+  suratJawabanEmailTo   String?
 
   // SLA
-  tenggatSlaTanggal    DateTime?
-  isMendekatiTenggat   Boolean   @default(false)
-  isMelewatiTenggat    Boolean   @default(false)
+  tenggatSlaTanggal  DateTime?
+  isMendekatiTenggat Boolean   @default(false)
+  isMelewatiTenggat  Boolean   @default(false)
 
   // Pengaju
-  pengajuId        String
-  pengaju          User      @relation("PengajuRelation", fields: [pengajuId], references: [id])
-  instansiPengaju  String
+  pengajuId       String
+  pengaju         User   @relation("PengajuRelation", fields: [pengajuId], references: [id])
+  instansiPengaju String
 
   // Relasi ke sub-model
   terperiksa                Terperiksa?
@@ -371,25 +371,25 @@ model PermohonanAsesmen {
 // =====================================================================
 
 model Terperiksa {
-  id                    String   @id @default(uuid())
-  permohonanId          String   @unique
-  permohonan            PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
+  id           String            @id @default(uuid())
+  permohonanId String            @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
   namaLengkap           String
   alias                 String?
   nik                   String?
-  isNikVerified         Boolean  @default(false)
+  isNikVerified         Boolean @default(false)
   statusIdentitasKhusus String?
 
-  tempatLahir           String
-  tanggalLahir          DateTime
-  usia                  Int
-  jenisKelamin          String   // Laki-laki | Perempuan
-  pekerjaan             String?
-  alamatKtp             String
-  alamatDomisili        String?
-  namaWaliPendamping    String?
-  kontakWali            String?
+  tempatLahir        String
+  tanggalLahir       DateTime
+  usia               Int
+  jenisKelamin       String // Laki-laki | Perempuan
+  pekerjaan          String?
+  alamatKtp          String
+  alamatDomisili     String?
+  namaWaliPendamping String?
+  kontakWali         String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -402,8 +402,8 @@ model Terperiksa {
 // =====================================================================
 
 model PrasyaratPemeriksaan {
-  id           String   @id @default(uuid())
-  permohonanId String   @unique
+  id           String            @id @default(uuid())
+  permohonanId String            @unique
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
   // 1. Checklist Kehadiran & Kedatangan Subjek
@@ -413,43 +413,43 @@ model PrasyaratPemeriksaan {
   catatanPencocokanIdentitas String?
 
   // 2. Petugas Pengantar & Pendamping/Wali Hadir
-  namaPengantar              String?
-  instansiPengantar          String?
-  jabatanPengantar           String?
-  kehadiranPengantar         Boolean   @default(false)
+  namaPengantar      String?
+  instansiPengantar  String?
+  jabatanPengantar   String?
+  kehadiranPengantar Boolean @default(false)
 
-  kehadiranPendamping        Boolean   @default(false)
-  namaPendamping             String?
-  hubunganPendamping         String?
-  dasarKeterlibatan          String?   // Surat Kuasa / Ortu / Wali Hukum
-  kontakPendamping           String?
+  kehadiranPendamping Boolean @default(false)
+  namaPendamping      String?
+  hubunganPendamping  String?
+  dasarKeterlibatan   String? // Surat Kuasa / Ortu / Wali Hukum
+  kontakPendamping    String?
 
   // 3. Penerjemah
-  membutuhkanPenerjemah      Boolean   @default(false)
-  namaPenerjemah             String?
-  bahasaPenerjemah           String?
-  kehadiranPenerjemah        Boolean   @default(false)
-  nomorPenugasanPenerjemah   String?
+  membutuhkanPenerjemah    Boolean @default(false)
+  namaPenerjemah           String?
+  bahasaPenerjemah         String?
+  kehadiranPenerjemah      Boolean @default(false)
+  nomorPenugasanPenerjemah String?
 
   // 4. Form Persetujuan / Assent (Informed Consent)
-  sudahDisetujui             Boolean   @default(false)
-  jenisFormPersetujuan       String?   // "Informed Consent (Dewasa)" | "Assent (Anak/Remaja)" | "Persetujuan Wali"
-  tanggalPersetujuan         DateTime?
-  penandatanganPersetujuan    String?
-  dokumenPersetujuanUrl      String?
+  sudahDisetujui           Boolean   @default(false)
+  jenisFormPersetujuan     String? // "Informed Consent (Dewasa)" | "Assent (Anak/Remaja)" | "Persetujuan Wali"
+  tanggalPersetujuan       DateTime?
+  penandatanganPersetujuan String?
+  dokumenPersetujuanUrl    String?
 
   // 5. Pernyataan Bebas Biaya
-  pernyataanBebasBiaya       Boolean   @default(false)
+  pernyataanBebasBiaya        Boolean   @default(false)
   tanggalPernyataanBebasBiaya DateTime?
-  dokumenBebasBiayaUrl       String?
+  dokumenBebasBiayaUrl        String?
 
   // Catatan Tambahan / Kondisi Khusus
-  kondisiKhususDarurat       Boolean   @default(false)
-  catatanKondisiKhusus       String?
-  tindakanDaruratRujukan     String?
+  kondisiKhususDarurat   Boolean @default(false)
+  catatanKondisiKhusus   String?
+  tindakanDaruratRujukan String?
 
-  petugasPenerimaId          String?
-  petugasPenerima            User?     @relation("PetugasPenerimaPrasyarat", fields: [petugasPenerimaId], references: [id])
+  petugasPenerimaId String?
+  petugasPenerima   User?   @relation("PetugasPenerimaPrasyarat", fields: [petugasPenerimaId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -462,19 +462,19 @@ model PrasyaratPemeriksaan {
 // =====================================================================
 
 model PerkaraHukum {
-  id           String   @id @default(uuid())
-  permohonanId String   @unique
+  id           String            @id @default(uuid())
+  permohonanId String            @unique
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
-  nomorLaporanPolisi     String
-  tanggalLp              DateTime
-  instansiPenyidik       String
-  namaPenyidik           String
-  nomorHpPenyidik        String
-  pasalDipersangkakan    String
-  tempatKejadianPerkara  String
+  nomorLaporanPolisi      String
+  tanggalLp               DateTime
+  instansiPenyidik        String
+  namaPenyidik            String
+  nomorHpPenyidik         String
+  pasalDipersangkakan     String
+  tempatKejadianPerkara   String
   tanggalWaktuPenangkapan DateTime?
-  kronologiSingkat       String
+  kronologiSingkat        String
 
   barangBuktiList BarangBukti[]
 
@@ -514,26 +514,26 @@ model BarangBukti {
 // =====================================================================
 
 model DokumenPersyaratan {
-  id           String   @id @default(uuid())
+  id           String            @id @default(uuid())
   permohonanId String
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
-  nama              String
-  kode              String?
-  wajib             Boolean  @default(true)
-  keterangan        String?
-  fileUrl           String?
-  fileName          String?
-  fileSize          String?
-  uploadedAt        DateTime?
-  statusVerifikasi  StatusVerifikasiDokumen @default(belum_diunggah)
-  catatanKoreksi    String?
-  versi             Int      @default(1)
+  nama             String
+  kode             String?
+  wajib            Boolean                 @default(true)
+  keterangan       String?
+  fileUrl          String?
+  fileName         String?
+  fileSize         String?
+  uploadedAt       DateTime?
+  statusVerifikasi StatusVerifikasiDokumen @default(belum_diunggah)
+  catatanKoreksi   String?
+  versi            Int                     @default(1)
 
   // Riwayat versi dokumen (immutable versioning)
-  parentId          String?
-  parent            DokumenPersyaratan?  @relation("DokumenVersioning", fields: [parentId], references: [id])
-  revisions         DokumenPersyaratan[] @relation("DokumenVersioning")
+  parentId  String?
+  parent    DokumenPersyaratan?  @relation("DokumenVersioning", fields: [parentId], references: [id])
+  revisions DokumenPersyaratan[] @relation("DokumenVersioning")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -546,34 +546,34 @@ model DokumenPersyaratan {
 // =====================================================================
 
 model TimAsesmen {
-  id           String   @id @default(uuid())
-  permohonanId String   @unique
+  id           String            @id @default(uuid())
+  permohonanId String            @unique
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
   sekretariatId   String?
-  sekretariat     User?    @relation("SekretariatRelation", fields: [sekretariatId], references: [id])
+  sekretariat     User?   @relation("SekretariatRelation", fields: [sekretariatId], references: [id])
   sekretariatNama String?
 
   asesorMedisId   String?
-  asesorMedis     User?    @relation("AsesorMedisRelation", fields: [asesorMedisId], references: [id])
+  asesorMedis     User?   @relation("AsesorMedisRelation", fields: [asesorMedisId], references: [id])
   asesorMedisNama String?
 
   asesorHukumId   String?
-  asesorHukum     User?    @relation("AsesorHukumRelation", fields: [asesorHukumId], references: [id])
+  asesorHukum     User?   @relation("AsesorHukumRelation", fields: [asesorHukumId], references: [id])
   asesorHukumNama String?
 
-  jadwalPemeriksaanMedis  DateTime?
-  jadwalPemeriksaanHukum  DateTime?
-  jadwalPleno             DateTime?
-  lokasiPemeriksaan       String?
+  jadwalPemeriksaanMedis DateTime?
+  jadwalPemeriksaanHukum DateTime?
+  jadwalPleno            DateTime?
+  lokasiPemeriksaan      String?
 
   // Disposisi ketua
-  disposisiHasil           String?
-  disposisiAlasan          String?
-  disposisiTanggal         DateTime?
-  disposisiKetua           String?
-  disposisiJabatan         String?
-  disposisiBuktiUrl        String?
+  disposisiHasil    String?
+  disposisiAlasan   String?
+  disposisiTanggal  DateTime?
+  disposisiKetua    String?
+  disposisiJabatan  String?
+  disposisiBuktiUrl String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -586,54 +586,54 @@ model TimAsesmen {
 // =====================================================================
 
 model AsesmenMedis {
-  id           String   @id @default(uuid())
-  permohonanId String   @unique
+  id           String            @id @default(uuid())
+  permohonanId String            @unique
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
-  asesorId    String
-  asesor      User     @relation(fields: [asesorId], references: [id])
-  asesorNama  String
-  tanggalPemeriksaan DateTime @default(now())
-  status      AssessmentStatus @default(DRAFT)
+  asesorId           String
+  asesor             User             @relation(fields: [asesorId], references: [id])
+  asesorNama         String
+  tanggalPemeriksaan DateTime         @default(now())
+  status             AssessmentStatus @default(DRAFT)
 
   // Riwayat zat (one-to-many)
-  riwayatZat  RiwayatZat[]
+  riwayatZat RiwayatZat[]
 
   // Pemeriksaan fisik
-  kondisiFisik           String?
-  tekananDarah           String?
-  denyutNadi             String?
-  pernapasan             String?
-  suhuTubuh              String?
-  needleTracks           String?
-  kondisiIntoksikasi     String?
-  fasilitasRujukan       String?
-  tandaBekasSuntikan     Boolean  @default(false)
-  komorbiditasMedis      String?
-  kondisiPsikologis      String?
+  kondisiFisik       String?
+  tekananDarah       String?
+  denyutNadi         String?
+  pernapasan         String?
+  suhuTubuh          String?
+  needleTracks       String?
+  kondisiIntoksikasi String?
+  fasilitasRujukan   String?
+  tandaBekasSuntikan Boolean @default(false)
+  komorbiditasMedis  String?
+  kondisiPsikologis  String?
 
   // Hasil urin (one-to-many)
-  hasilUrin    HasilUrin[]
+  hasilUrin HasilUrin[]
 
   // Instrumen
-  instrumen               String   @default("ASSIST") // ASSIST | ASI
-  skorInstrumen           Float?
-  tingkatRisikoInstrumen  String?
+  instrumen              String  @default("ASSIST") // ASSIST | ASI
+  skorInstrumen          Float?
+  tingkatRisikoInstrumen String?
 
   // Kesimpulan
-  diagnosisKlinisIcd         String?
-  interpretasiKlinis         String?
-  kebutuhanRawat             String?
-  durasiUsulanBulan          Int?
-  catatanKhusus              String?
+  diagnosisKlinisIcd            String?
+  interpretasiKlinis            String?
+  kebutuhanRawat                String?
+  durasiUsulanBulan             Int?
+  catatanKhusus                 String?
   permintaanPemeriksaanTambahan String?
 
   // Instrumen kriteria plasemen
-  instrumenKriteriaPlasemen  InstrumenKriteriaPlasemen?
+  instrumenKriteriaPlasemen InstrumenKriteriaPlasemen?
 
   // Finalisasi & amandemen
-  finalizedAt  DateTime?
-  finalizedBy  String?
+  finalizedAt   DateTime?
+  finalizedBy   String?
   amendmentNote String?
 
   terakhirDiperbarui DateTime @updatedAt
@@ -646,11 +646,11 @@ model RiwayatZat {
   asesmenMedisId String
   asesmenMedis   AsesmenMedis @relation(fields: [asesmenMedisId], references: [id], onDelete: Cascade)
 
-  jenisZat             String
-  caraPakai            String   // Hisap, Telan, Suntik
-  frekuensi            String
-  lamaPemakaianBulan   Int
-  terakhirPakai        String?
+  jenisZat           String
+  caraPakai          String // Hisap, Telan, Suntik
+  frekuensi          String
+  lamaPemakaianBulan Int
+  terakhirPakai      String?
 
   @@map("riwayat_zat")
 }
@@ -675,24 +675,24 @@ model InstrumenKriteriaPlasemen {
   asesmenMedisId String       @unique
   asesmenMedis   AsesmenMedis @relation(fields: [asesmenMedisId], references: [id], onDelete: Cascade)
 
-  permohonanId   String       @unique
-  permohonan     PermohonanAsesmen @relation(fields: [permohonanId], references: [id])
+  permohonanId String            @unique
+  permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id])
 
-  tanggalPengisian             DateTime @default(now())
-  petugasNama                  String
-  petugasInstansi              String
-  wawancaraTambahanDilakukan   Boolean  @default(false)
-  catatanWawancara             String?
+  tanggalPengisian           DateTime @default(now())
+  petugasNama                String
+  petugasInstansi            String
+  wawancaraTambahanDilakukan Boolean  @default(false)
+  catatanWawancara           String?
 
   penilaianPerDimensi PenilaianDimensiASAM[]
 
   // Hasil akhir
-  levelRekomendasiAkhir    Int      // 0-4
-  justifikasiRekomendasi   String?
-  adaDisparitasDimensi     Boolean  @default(false)
-  catatanDisparitas        String?
+  levelRekomendasiAkhir  Int // 0-4
+  justifikasiRekomendasi String?
+  adaDisparitasDimensi   Boolean @default(false)
+  catatanDisparitas      String?
 
-  statusPengisian String   @default("draf") // draf | lengkap | divalidasi
+  statusPengisian String    @default("draf") // draf | lengkap | divalidasi
   validasiOleh    String?
   tanggalValidasi DateTime?
 
@@ -700,14 +700,14 @@ model InstrumenKriteriaPlasemen {
 }
 
 model PenilaianDimensiASAM {
-  id           String   @id @default(uuid())
-  instrumenId  String
-  instrumen    InstrumenKriteriaPlasemen @relation(fields: [instrumenId], references: [id], onDelete: Cascade)
+  id          String                    @id @default(uuid())
+  instrumenId String
+  instrumen   InstrumenKriteriaPlasemen @relation(fields: [instrumenId], references: [id], onDelete: Cascade)
 
-  dimensi               DimensiASAM
-  levelDipilih          Int          // 0-4
-  catatanKlinis         String?
-  indikatorTerpilih     String[]     // JSON array of strings
+  dimensi           DimensiASAM
+  levelDipilih      Int // 0-4
+  catatanKlinis     String?
+  indikatorTerpilih String[] // JSON array of strings
 
   @@map("penilaian_dimensi_asam")
 }
@@ -717,37 +717,37 @@ model PenilaianDimensiASAM {
 // =====================================================================
 
 model AsesmenHukum {
-  id           String   @id @default(uuid())
-  permohonanId String   @unique
+  id           String            @id @default(uuid())
+  permohonanId String            @unique
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
-  asesorId    String
-  asesor      User     @relation(fields: [asesorId], references: [id])
-  asesorNama  String
-  tanggalTelaah DateTime @default(now())
+  asesorId      String
+  asesor        User             @relation(fields: [asesorId], references: [id])
+  asesorNama    String
+  tanggalTelaah DateTime         @default(now())
   status        AssessmentStatus @default(DRAFT)
 
   // Riwayat residivisme
-  pernahDitangkap         Boolean  @default(false)
-  keteranganPerkaraLalu   String?
-  terverifikasiDatabase   Boolean  @default(false)
+  pernahDitangkap       Boolean @default(false)
+  keteranganPerkaraLalu String?
+  terverifikasiDatabase Boolean @default(false)
 
   // Analisis
-  analisisPeran       AnalisisPeran @default(Belum_Dapat_Disimpulkan)
-  argumentasiPeran    String?
-  faktaPendukung      String[]     // JSON array
+  analisisPeran             AnalisisPeran @default(Belum_Dapat_Disimpulkan)
+  argumentasiPeran          String?
+  faktaPendukung            String[] // JSON array
   catatanBelumTerverifikasi String?
-  analisisBarangBukti String?
+  analisisBarangBukti       String?
 
   // Kesimpulan
-  kesimpulanHukum     String?
-  rekomendasiHukum    RekomendasiHukum?
-  catatanKlarifikasi  String?
+  kesimpulanHukum    String?
+  rekomendasiHukum   RekomendasiHukum?
+  catatanKlarifikasi String?
 
   // Finalisasi & amandemen
-  finalizedAt    DateTime?
-  finalizedBy    String?
-  amendmentNote  String?
+  finalizedAt   DateTime?
+  finalizedBy   String?
+  amendmentNote String?
 
   terakhirDiperbarui DateTime @updatedAt
 
@@ -759,26 +759,26 @@ model AsesmenHukum {
 // =====================================================================
 
 model SidangPleno {
-  id           String   @id @default(uuid())
-  permohonanId String   @unique
+  id           String            @id @default(uuid())
+  permohonanId String            @unique
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
-  tanggalPleno      DateTime
-  waktu             String?
-  tempat            String?
-  nomorBeritaAcara  String?
-  pimpinanPleno     String?
+  tanggalPleno     DateTime
+  waktu            String?
+  tempat           String?
+  nomorBeritaAcara String?
+  pimpinanPleno    String?
 
   daftarHadir DaftarHadirPleno[]
 
-  pokokBahasan               String?
-  catatanPerbedaanPendapat   String?
-  kesepakatanRekomendasi     String?
-  jenisRekomendasiFinal      JenisRekomendasiFinal?
-  durasiRehabBulan           Int?
-  fasilitasRujukanUsulan     String?
-  statusPleno                StatusPleno @default(terjadwal)
-  fileBeritaAcaraSigned      String?
+  pokokBahasan             String?
+  catatanPerbedaanPendapat String?
+  kesepakatanRekomendasi   String?
+  jenisRekomendasiFinal    JenisRekomendasiFinal?
+  durasiRehabBulan         Int?
+  fasilitasRujukanUsulan   String?
+  statusPleno              StatusPleno            @default(terjadwal)
+  fileBeritaAcaraSigned    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -804,26 +804,26 @@ model DaftarHadirPleno {
 // =====================================================================
 
 model RekomendasiResmi {
-  id           String   @id @default(uuid())
-  permohonanId String   @unique
+  id           String            @id @default(uuid())
+  permohonanId String            @unique
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
-  nomorSurat             String    @unique
-  tanggalTerbit          DateTime?
-  dibuatOleh             String?
-  ringkasanMedis         String?
-  ringkasanHukum         String?
-  rekomendasiFinalText   String?
+  nomorSurat           String    @unique
+  tanggalTerbit        DateTime?
+  dibuatOleh           String?
+  ringkasanMedis       String?
+  ringkasanHukum       String?
+  rekomendasiFinalText String?
 
-  daftarPengesah         PengesahDokumen[]
+  daftarPengesah PengesahDokumen[]
 
-  isLengkapPengesahan    Boolean   @default(false)
-  qrVerificationCode     String?   @unique
-  filePdfUrl             String?
+  isLengkapPengesahan Boolean @default(false)
+  qrVerificationCode  String? @unique
+  filePdfUrl          String?
 
   // Bukti penerimaan pengaju
-  buktPenerimaanDiterimaOleh    String?
-  buktiPenerimaanTanggal        DateTime?
+  buktPenerimaanDiterimaOleh      String?
+  buktiPenerimaanTanggal          DateTime?
   buktiPenerimaanNomorTandaTerima String?
 
   createdAt DateTime @default(now())
@@ -833,9 +833,9 @@ model RekomendasiResmi {
 }
 
 model PengesahDokumen {
-  id               String          @id @default(uuid())
-  rekomendasiId    String
-  rekomendasi      RekomendasiResmi @relation(fields: [rekomendasiId], references: [id], onDelete: Cascade)
+  id            String           @id @default(uuid())
+  rekomendasiId String
+  rekomendasi   RekomendasiResmi @relation(fields: [rekomendasiId], references: [id], onDelete: Cascade)
 
   nama                   String
   jabatan                String
@@ -853,19 +853,19 @@ model PengesahDokumen {
 // =====================================================================
 
 model TindakLanjutLayanan {
-  id           String   @id @default(uuid())
-  permohonanId String   @unique
+  id           String            @id @default(uuid())
+  permohonanId String            @unique
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
   jenisTindakLanjut   JenisTindakLanjut
   namaFasilitasTujuan String?
   kontakFasilitas     String?
-  statusRujukan       StatusRujukan @default(belum_kirim)
+  statusRujukan       StatusRujukan     @default(belum_kirim)
 
-  tanggalRujukanDikirim     DateTime?
-  tanggalKonfirmasiFasilitas DateTime?
-  tanggalMulaiLayanan        DateTime?
-  hambatanPelaksanaan        String?
+  tanggalRujukanDikirim       DateTime?
+  tanggalKonfirmasiFasilitas  DateTime?
+  tanggalMulaiLayanan         DateTime?
+  hambatanPelaksanaan         String?
   penanggungJawabTindakLanjut String?
   buktiPelaksanaanUrl         String?
   statusProsesHukumTerkait    String?
@@ -880,12 +880,12 @@ model TindakLanjutLayanan {
 // =====================================================================
 
 model MonitoringTindakLanjut {
-  id           String   @id @default(uuid())
-  permohonanId String   @unique
+  id           String            @id @default(uuid())
+  permohonanId String            @unique
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
-  nomorRekomendasi   String?
-  statusMonitoring   StatusMonitoring @default(menunggu_pelaksanaan)
+  nomorRekomendasi String?
+  statusMonitoring StatusMonitoring @default(menunggu_pelaksanaan)
 
   pelaksanaanRehab    PelaksanaanRehab?
   laporanKontrolList  LaporanKontrol[]
@@ -900,41 +900,41 @@ model MonitoringTindakLanjut {
 }
 
 model PelaksanaanRehab {
-  id               String                 @id @default(uuid())
-  monitoringId     String                 @unique
-  monitoring       MonitoringTindakLanjut @relation(fields: [monitoringId], references: [id], onDelete: Cascade)
+  id           String                 @id @default(uuid())
+  monitoringId String                 @unique
+  monitoring   MonitoringTindakLanjut @relation(fields: [monitoringId], references: [id], onDelete: Cascade)
 
-  nomorRekomendasiTAT           String?
-  jenisLayananSesuaiRekomendasi String?
-  namaFasilitasTujuan           String?
-  alamatFasilitas               String?
+  nomorRekomendasiTAT            String?
+  jenisLayananSesuaiRekomendasi  String?
+  namaFasilitasTujuan            String?
+  alamatFasilitas                String?
   kontakPenanggungJawabFasilitas String?
-  namaPenanggungJawabFasilitas  String?
+  namaPenanggungJawabFasilitas   String?
 
-  tanggalKoordinasiPenerimaan   DateTime?
-  hasilKoordinasiPenerimaan     String?
-  catatanKoordinasi             String?
+  tanggalKoordinasiPenerimaan DateTime?
+  hasilKoordinasiPenerimaan   String?
+  catatanKoordinasi           String?
 
-  tanggalSerahTerimaAktual      DateTime?
-  identitasPihakMenyerahkan     String?
-  identitasPihakMenerima        String?
-  fileBaSerahTerimaUrl          String?
+  tanggalSerahTerimaAktual  DateTime?
+  identitasPihakMenyerahkan String?
+  identitasPihakMenerima    String?
+  fileBaSerahTerimaUrl      String?
 
   tanggalMasukLayananTerkonfirmasi DateTime?
 
-  adaKendala                    Boolean  @default(false)
-  kendala                       String?
-  perbedaanDariRekomendasi      String?
+  adaKendala               Boolean @default(false)
+  kendala                  String?
+  perbedaanDariRekomendasi String?
 
-  statusPelaksanaan             StatusPelaksanaanRehab @default(perlu_konfirmasi)
-  diisiOleh                     String?
-  kapasitasPengisi              String?
-  tanggalDiisi                  DateTime?
+  statusPelaksanaan StatusPelaksanaanRehab @default(perlu_konfirmasi)
+  diisiOleh         String?
+  kapasitasPengisi  String?
+  tanggalDiisi      DateTime?
 
-  statusVerifikasiAdmin         String?
-  catatanVerifikasiAdmin        String?
-  tanggalVerifikasiAdmin        DateTime?
-  diverifikasiOleh              String?
+  statusVerifikasiAdmin  String?
+  catatanVerifikasiAdmin String?
+  tanggalVerifikasiAdmin DateTime?
+  diverifikasiOleh       String?
 
   @@map("pelaksanaan_rehab")
 }
@@ -944,34 +944,34 @@ model LaporanKontrol {
   monitoringId String
   monitoring   MonitoringTindakLanjut @relation(fields: [monitoringId], references: [id], onDelete: Cascade)
 
-  jenisLaporan                    JenisLaporanKontrol
-  tanggalKegiatanSebenarnya       DateTime
-  namaFasilitasPelapor            String?
-  nomorLaporanFasilitas           String?
-  tanggalLaporanFasilitas         DateTime?
-  namaPenerbitLaporan             String?
-  kapasitasPenerbit               String?
+  jenisLaporan              JenisLaporanKontrol
+  tanggalKegiatanSebenarnya DateTime
+  namaFasilitasPelapor      String?
+  nomorLaporanFasilitas     String?
+  tanggalLaporanFasilitas   DateTime?
+  namaPenerbitLaporan       String?
+  kapasitasPenerbit         String?
 
   statusPelaksanaanBerdasarkanBukti StatusPelaksanaanBukti @default(tidak_terkonfirmasi)
-  ringkasanAdministratif          String?
-  catatanKendala                  String?
-  rencanaBerdasarkanLaporan       String?
-  fileBuktiUrl                    String?
+  ringkasanAdministratif            String?
+  catatanKendala                    String?
+  rencanaBerdasarkanLaporan         String?
+  fileBuktiUrl                      String?
 
-  diunggahOleh                    String?
-  kapasitasPengunggah             String?
-  tanggalDiunggah                 DateTime @default(now())
+  diunggahOleh        String?
+  kapasitasPengunggah String?
+  tanggalDiunggah     DateTime @default(now())
 
-  statusAdmin                     String?
-  catatanAdmin                    String?
-  diverifikasiOleh                String?
-  tanggalVerifikasi               DateTime?
+  statusAdmin       String?
+  catatanAdmin      String?
+  diverifikasiOleh  String?
+  tanggalVerifikasi DateTime?
 
-  perluTelaahKlinis               Boolean?
-  statusTelaahKlinis              String?
-  penugasanMedis                  String?
-  catatanTelaahKlinis             String?
-  tanggalTelaahKlinis             DateTime?
+  perluTelaahKlinis   Boolean?
+  statusTelaahKlinis  String?
+  penugasanMedis      String?
+  catatanTelaahKlinis String?
+  tanggalTelaahKlinis DateTime?
 
   @@map("laporan_kontrol")
 }
@@ -981,22 +981,22 @@ model BuktiWajibLapor {
   monitoringId String
   monitoring   MonitoringTindakLanjut @relation(fields: [monitoringId], references: [id], onDelete: Cascade)
 
-  tanggalRencanaWajibLapor    DateTime?
-  tanggalPelaporanAktual      DateTime?
-  tanggalWajibLapor           DateTime
-  waktuInputSistem            DateTime?
-  namaPenyidikPenerima        String?
-  instansiPenyidik            String?
-  kegiatanRehabTerkait        String?
-  kanal                       KanalWajibLapor @default(langsung)
-  buktiPenerimaanUrl          String?
-  catatanKendala              String?
-  statusKonfirmasi            StatusKonfirmasiWajibLapor @default(diajukan)
+  tanggalRencanaWajibLapor DateTime?
+  tanggalPelaporanAktual   DateTime?
+  tanggalWajibLapor        DateTime
+  waktuInputSistem         DateTime?
+  namaPenyidikPenerima     String?
+  instansiPenyidik         String?
+  kegiatanRehabTerkait     String?
+  kanal                    KanalWajibLapor            @default(langsung)
+  buktiPenerimaanUrl       String?
+  catatanKendala           String?
+  statusKonfirmasi         StatusKonfirmasiWajibLapor @default(diajukan)
 
-  statusVerifikasiAdmin       String?
-  catatanAdmin                String?
-  diunggahOleh                String?
-  tanggalDiunggah             DateTime @default(now())
+  statusVerifikasiAdmin String?
+  catatanAdmin          String?
+  diunggahOleh          String?
+  tanggalDiunggah       DateTime @default(now())
 
   @@map("bukti_wajib_lapor")
 }
@@ -1006,24 +1006,24 @@ model AkhirLayananRehab {
   monitoringId String                 @unique
   monitoring   MonitoringTindakLanjut @relation(fields: [monitoringId], references: [id], onDelete: Cascade)
 
-  tanggalAkhirLayananAktual     DateTime
-  hasilSesuaiDokumenFasilitas   String?
-  statusAkhir                   StatusAkhirLayanan
-  namaFasilitas                 String?
-  pihakPenerbitKeterangan       String?
-  fileSuratAkhirLayananUrl      String?
-  rencanaLanjutanDariFasilitas  String?
-  fasilitasPascarehabJikaAda    String?
+  tanggalAkhirLayananAktual        DateTime
+  hasilSesuaiDokumenFasilitas      String?
+  statusAkhir                      StatusAkhirLayanan
+  namaFasilitas                    String?
+  pihakPenerbitKeterangan          String?
+  fileSuratAkhirLayananUrl         String?
+  rencanaLanjutanDariFasilitas     String?
+  fasilitasPascarehabJikaAda       String?
   jadwalLanjutanBerdasarkanRencana String?
-  buktiWajibLaporPascaRawatInap String?
+  buktiWajibLaporPascaRawatInap    String?
 
-  diisiOleh                     String?
-  kapasitasPengisi              String?
-  tanggalDiisi                  DateTime @default(now())
+  diisiOleh        String?
+  kapasitasPengisi String?
+  tanggalDiisi     DateTime @default(now())
 
-  statusVerifikasiAdmin         String?
-  diverifikasiOleh              String?
-  catatanVerifikasiAdmin        String?
+  statusVerifikasiAdmin  String?
+  diverifikasiOleh       String?
+  catatanVerifikasiAdmin String?
 
   @@map("akhir_layanan_rehab")
 }
@@ -1033,7 +1033,7 @@ model AkhirLayananRehab {
 // =====================================================================
 
 model Klarifikasi {
-  id           String   @id @default(uuid())
+  id           String            @id @default(uuid())
   permohonanId String
   permohonan   PermohonanAsesmen @relation(fields: [permohonanId], references: [id], onDelete: Cascade)
 
@@ -1059,21 +1059,21 @@ model Klarifikasi {
 // =====================================================================
 
 model AuditLog {
-  id           String   @id @default(uuid())
-  timestamp    DateTime @default(now())
+  id        String   @id @default(uuid())
+  timestamp DateTime @default(now())
 
-  actorId      String?
-  actor        User?    @relation(fields: [actorId], references: [id])
-  actorNama    String
-  actorPeran   String
+  actorId    String?
+  actor      User?   @relation(fields: [actorId], references: [id])
+  actorNama  String
+  actorPeran String
 
   permohonanId String?
   permohonan   PermohonanAsesmen? @relation(fields: [permohonanId], references: [id])
 
-  aksi         String   // e.g., "SUBMIT_PERMOHONAN", "APPROVE_AKUN", "FINALISASI_MEDIS"
-  rincian      String   // Detail aksi
-  ipAddress    String?
-  userAgent    String?
+  aksi      String // e.g., "SUBMIT_PERMOHONAN", "APPROVE_AKUN", "FINALISASI_MEDIS"
+  rincian   String // Detail aksi
+  ipAddress String?
+  userAgent String?
 
   @@map("audit_log")
 }
