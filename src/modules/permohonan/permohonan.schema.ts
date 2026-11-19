@@ -97,6 +97,8 @@ export const mintaPerbaikanSchema = z.object({
   dokumenPerluDiperbaiki: z.array(z.object({
     dokumenId: z.string(),
     catatanKoreksi: z.string(),
+    nama: z.string().optional(),
+    kode: z.string().optional(),
   })).default([]),
 }).transform(val => ({
   catatanPerbaikan: val.catatanPerbaikan || val.catatanKoreksi || 'Perlu perbaikan berkas permohonan',

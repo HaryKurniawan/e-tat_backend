@@ -26,12 +26,31 @@ export const mintaPerbaikan = async (
 
     if (dokumenPerluDiperbaiki.length > 0) {
       await Promise.all(
-        dokumenPerluDiperbaiki.map((d) =>
-          prisma.dokumenPersyaratan.updateMany({
-            where: { id: d.dokumenId, permohonanId: id },
+        dokumenPerluDiperbaiki.map(async (d) => {
+          const updateRes = await prisma.dokumenPersyaratan.updateMany({
+            where: {
+              permohonanId: id,
+              OR: [
+                { id: d.dokumenId },
+                ...(d.kode ? [{ kode: d.kode }] : []),
+              ],
+            },
             data: { statusVerifikasi: 'perlu_perbaikan', catatanKoreksi: d.catatanKoreksi },
-          }).catch(() => null)
-        )
+          }).catch(() => ({ count: 0 }));
+
+          if (updateRes.count === 0 && d.nama) {
+            await prisma.dokumenPersyaratan.create({
+              data: {
+                permohonanId: id,
+                nama: d.nama,
+                kode: d.kode || undefined,
+                wajib: true,
+                statusVerifikasi: 'perlu_perbaikan',
+                catatanKoreksi: d.catatanKoreksi,
+              },
+            }).catch(() => null);
+          }
+        })
       );
     }
 
