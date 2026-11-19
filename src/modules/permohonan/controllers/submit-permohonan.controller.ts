@@ -30,6 +30,10 @@ export const submitPermohonan = async (
       sendForbidden(res);
       return;
     }
+    if (permohonan.applicationStatus === 'SUBMITTED') {
+      sendSuccess(res, permohonan, 'Permohonan sudah dalam status diajukan (SUBMITTED)');
+      return;
+    }
     if (
       permohonan.applicationStatus !== 'DRAFT' &&
       permohonan.applicationStatus !== 'NEEDS_CORRECTION'

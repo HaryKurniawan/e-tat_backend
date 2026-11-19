@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../../../config/database';
 import { sendCreated } from '../../../utils/response.util';
-import { generateTrackingNumber } from '../../../utils/nomor.util';
+import { generateTrackingNumber, generateNomorPermohonan } from '../../../utils/nomor.util';
 import { createPermohonanSchema } from '../permohonan.schema';
 import { permohonanFullInclude } from '../permohonan.helper';
 import { logAudit } from '../../../utils/audit.util';
+import { sendNotifikasiPermohonanBaruEmail } from '../../../services/email.service';
 
 const safeDate = (val?: string | null): Date | undefined => {
   if (!val || typeof val !== 'string' || val.trim() === '') return undefined;
@@ -14,7 +15,7 @@ const safeDate = (val?: string | null): Date | undefined => {
 
 /**
  * POST /api/permohonan
- * Pengaju: Buat permohonan baru (status: DRAFT)
+ * Pengaju: Buat permohonan baru (langsung berstatus SUBMITTED masuk ke antrean verifikasi)
  */
 export const createPermohonan = async (
   req: Request,
@@ -24,16 +25,17 @@ export const createPermohonan = async (
   try {
     const input = createPermohonanSchema.parse(req.body);
     const trackingNumber = generateTrackingNumber();
+    const nomorPermohonan = await generateNomorPermohonan();
 
     const { barangBuktiList, ...perkaraFields } = input.perkara;
 
     const data = await prisma.permohonanAsesmen.create({
       data: {
         trackingNumber,
-        nomorPermohonan: `DRAFT-${trackingNumber}`,
+        nomorPermohonan,
         pengajuId: req.user!.id,
         instansiPengaju: req.user!.agency || req.user!.name,
-        applicationStatus: 'DRAFT',
+        applicationStatus: 'SUBMITTED',
         medicalStatus: 'NOT_STARTED',
         legalStatus: 'NOT_STARTED',
         deliveryStatus: 'NOT_ISSUED',
@@ -111,11 +113,30 @@ export const createPermohonan = async (
       actorNama: req.user!.name,
       actorPeran: req.user!.role,
       permohonanId: data.id,
-      aksi: 'BUAT_PERMOHONAN',
-      rincian: `Membuat permohonan baru untuk ${input.terperiksa.namaLengkap}`,
+      aksi: 'SUBMIT_PERMOHONAN',
+      rincian: `Permohonan ${nomorPermohonan} diajukan untuk verifikasi (${input.terperiksa.namaLengkap})`,
     });
 
-    sendCreated(res, data, 'Permohonan berhasil dibuat');
+    // Kirim notifikasi email ke Admin / Sekretariat TAT
+    const adminUser = await prisma.user.findFirst({
+      where: { role: 'ADMIN', isActive: true },
+    });
+
+    if (adminUser?.email) {
+      sendNotifikasiPermohonanBaruEmail({
+        adminEmail: adminUser.email,
+        nomorPermohonan,
+        trackingNumber: data.trackingNumber,
+        namaPemohon: req.user!.name,
+        instansiPemohon: req.user!.agency || 'Penyidik POLRI',
+        terperiksaNama: input.terperiksa.namaLengkap,
+        nomorLp: perkaraFields.nomorLaporanPolisi,
+      }).catch((err) => {
+        console.error('❌ Gagal mengirim notifikasi email permohonan baru ke Admin:', err);
+      });
+    }
+
+    sendCreated(res, data, 'Permohonan berhasil dibuat dan diajukan');
   } catch (err) {
     next(err);
   }
