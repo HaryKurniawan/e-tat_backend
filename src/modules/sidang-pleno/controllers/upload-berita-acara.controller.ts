@@ -34,10 +34,10 @@ export const uploadBeritaAcaraSigned = async (
       const isImage = req.file.mimetype.startsWith('image/') || ['.jpg', '.jpeg', '.png', '.webp'].includes(ext);
 
       if (isPdf) {
-        const result = await uploadPdfToSupabase(req.file.path, 'berita_acara', true);
+        const result = await uploadPdfToSupabase(req.file.path, 'berita_acara', false);
         fileUrl = result.url;
       } else if (isImage) {
-        const result = await uploadFileToCloudinary(req.file.path, 'berita_acara', true);
+        const result = await uploadFileToCloudinary(req.file.path, 'berita_acara', false);
         fileUrl = result.secure_url || result.url;
       }
     } catch (uploadErr) {
