@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { AssessmentStatus } from '@prisma/client';
+import { AssessmentStatus, ApplicationStatus } from '@prisma/client';
 import prisma from '../../../config/database';
 import { sendSuccess, sendNotFound } from '../../../utils/response.util';
 import { getParam } from '../../../utils/param.util';
@@ -59,9 +59,21 @@ export const finalisasiHukum = async (
       update: dataPayload,
     });
 
+    const checkPermohonan = await prisma.permohonanAsesmen.findUnique({
+      where: { id: permohonanId },
+      include: { asesmenMedis: true },
+    });
+
+    const isMedisFinal =
+      checkPermohonan?.medicalStatus === 'FINAL' ||
+      checkPermohonan?.asesmenMedis?.status === 'FINAL';
+
     await prisma.permohonanAsesmen.update({
       where: { id: permohonanId },
-      data: { legalStatus: AssessmentStatus.FINAL },
+      data: {
+        legalStatus: AssessmentStatus.FINAL,
+        ...(isMedisFinal ? { applicationStatus: ApplicationStatus.READY_FOR_CONFERENCE } : {}),
+      },
     });
 
     await logAudit({
