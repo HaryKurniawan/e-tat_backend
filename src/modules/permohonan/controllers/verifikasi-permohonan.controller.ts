@@ -28,7 +28,12 @@ export const verifikasiPermohonan = async (
       await Promise.all(
         dokumenStatus.map((ds) =>
           prisma.dokumenPersyaratan.updateMany({
-            where: { id: ds.dokumenId, permohonanId: id },
+            where: {
+              id: ds.dokumenId,
+              permohonanId: id,
+              // Dokumen hanya dapat disetujui (sesuai) jika file fisik/digital telah dilampirkan
+              ...(ds.status === 'sesuai' ? { fileUrl: { not: null } } : {}),
+            },
             data: {
               statusVerifikasi: ds.status,
               catatanKoreksi: ds.catatanKoreksi,
