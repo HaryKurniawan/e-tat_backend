@@ -23,6 +23,7 @@ import dashboardRoutes from './modules/dashboard/dashboard.routes';
 import auditRoutes from './modules/audit/audit.routes';
 import uploadRoutes from './modules/upload/upload.routes';
 import prasyaratPemeriksaanRoutes from './modules/prasyarat-pemeriksaan/prasyarat-pemeriksaan.routes';
+import emailRoutes from './modules/email/email.routes';
 
 const app: Application = express();
 
@@ -30,6 +31,7 @@ const app: Application = express();
 app.use(
   helmet({
     contentSecurityPolicy: false, // Memastikan Swagger UI dapat memuat stylesheet dan assets tanpa diblokir CSP
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
   })
 );
 app.use(
@@ -124,6 +126,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/prasyarat-pemeriksaan', prasyaratPemeriksaanRoutes);
+app.use('/api/email', emailRoutes);
 
 // Fallback & Error handling
 app.use(notFoundHandler);
