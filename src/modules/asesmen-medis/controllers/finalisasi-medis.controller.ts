@@ -120,8 +120,26 @@ export const finalisasiMedis = async (
     });
 
     // Kirim notifikasi email ke Asesor Hukum bahwa asesmen medis telah selesai difinalisasi
-    if (permohonan.timAsesmen?.asesorHukum?.email && permohonan.terperiksa) {
-      const asesorHukum = permohonan.timAsesmen.asesorHukum;
+    let asesorHukum = permohonan.timAsesmen?.asesorHukum;
+    if (!asesorHukum?.email) {
+      const defaultHukum = await prisma.user.findFirst({
+        where: { role: 'HUKUM', isActive: true },
+      });
+      if (defaultHukum) {
+        asesorHukum = defaultHukum;
+        if (permohonan.timAsesmen) {
+          await prisma.timAsesmen.update({
+            where: { id: permohonan.timAsesmen.id },
+            data: {
+              asesorHukumId: defaultHukum.id,
+              asesorHukumNama: permohonan.timAsesmen.asesorHukumNama || defaultHukum.name,
+            },
+          });
+        }
+      }
+    }
+
+    if (asesorHukum?.email && permohonan.terperiksa) {
       const tesUrinStr = updated.hasilUrin && updated.hasilUrin.length > 0
         ? updated.hasilUrin.map((u) => `${u.parameter}: ${u.hasil}`).join(', ')
         : 'Terlampir di Rekam Medis';
@@ -133,9 +151,9 @@ export const finalisasiMedis = async (
         asesorMedisNama: user.name,
         nomorPermohonan: permohonan.nomorPermohonan,
         trackingNumber: permohonan.trackingNumber,
-        jadwalPemeriksaanHukum: permohonan.timAsesmen.jadwalPemeriksaanHukum,
-        jadwalPleno: permohonan.timAsesmen.jadwalPleno,
-        lokasiPemeriksaan: permohonan.timAsesmen.lokasiPemeriksaan,
+        jadwalPemeriksaanHukum: permohonan.timAsesmen?.jadwalPemeriksaanHukum,
+        jadwalPleno: permohonan.timAsesmen?.jadwalPleno,
+        lokasiPemeriksaan: permohonan.timAsesmen?.lokasiPemeriksaan,
         terperiksa: permohonan.terperiksa,
         perkara: permohonan.perkara,
         hasilMedis: {

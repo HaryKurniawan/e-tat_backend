@@ -29,9 +29,16 @@ export const tugaskanTimAsesmen = async (
       return;
     }
 
+    const defaultMedis = await prisma.user.findFirst({ where: { role: 'MEDIS', isActive: true } });
+    const defaultHukum = await prisma.user.findFirst({ where: { role: 'HUKUM', isActive: true } });
+
     const timData: any = {
       sekretariatId: req.user!.id,
       sekretariatNama: req.user!.name,
+      asesorMedisId: input.asesorMedisId || permohonan.timAsesmen?.asesorMedisId || defaultMedis?.id,
+      asesorMedisNama: input.asesorMedisNama || permohonan.timAsesmen?.asesorMedisNama || (defaultMedis ? `${defaultMedis.name} (${defaultMedis.agency || 'Klinik Pratama TAT'})` : undefined),
+      asesorHukumId: input.asesorHukumId || permohonan.timAsesmen?.asesorHukumId || defaultHukum?.id,
+      asesorHukumNama: input.asesorHukumNama || permohonan.timAsesmen?.asesorHukumNama || (defaultHukum ? `${defaultHukum.name} (${defaultHukum.agency || 'Kejaksaan Negeri / Tim Hukum TAT'})` : undefined),
       ...input,
       jadwalPemeriksaanMedis: input.jadwalPemeriksaanMedis
         ? new Date(input.jadwalPemeriksaanMedis)

@@ -41,6 +41,9 @@ export const catatDisposisi = async (
         data: { applicationStatus: newStatus },
       });
 
+      const defaultMedis = await tx.user.findFirst({ where: { role: 'MEDIS', isActive: true } });
+      const defaultHukum = await tx.user.findFirst({ where: { role: 'HUKUM', isActive: true } });
+
       if (permohonan.timAsesmen) {
         await tx.timAsesmen.update({
           where: { permohonanId: id },
@@ -53,6 +56,10 @@ export const catatDisposisi = async (
             disposisiBuktiUrl: input.disposisiBuktiUrl,
             sekretariatId: req.user!.id,
             sekretariatNama: req.user!.name,
+            asesorMedisId: permohonan.timAsesmen.asesorMedisId || defaultMedis?.id,
+            asesorMedisNama: permohonan.timAsesmen.asesorMedisNama || (defaultMedis ? `${defaultMedis.name} (${defaultMedis.agency || 'Klinik Pratama TAT'})` : undefined),
+            asesorHukumId: permohonan.timAsesmen.asesorHukumId || defaultHukum?.id,
+            asesorHukumNama: permohonan.timAsesmen.asesorHukumNama || (defaultHukum ? `${defaultHukum.name} (${defaultHukum.agency || 'Kejaksaan Negeri / Tim Hukum TAT'})` : undefined),
           },
         });
       } else {
@@ -67,6 +74,10 @@ export const catatDisposisi = async (
             disposisiKetua: input.disposisiKetua,
             disposisiJabatan: input.disposisiJabatan,
             disposisiBuktiUrl: input.disposisiBuktiUrl,
+            asesorMedisId: defaultMedis?.id,
+            asesorMedisNama: defaultMedis ? `${defaultMedis.name} (${defaultMedis.agency || 'Klinik Pratama TAT'})` : undefined,
+            asesorHukumId: defaultHukum?.id,
+            asesorHukumNama: defaultHukum ? `${defaultHukum.name} (${defaultHukum.agency || 'Kejaksaan Negeri / Tim Hukum TAT'})` : undefined,
           },
         });
       }
