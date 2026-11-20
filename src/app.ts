@@ -2,6 +2,7 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import swaggerUi from 'swagger-ui-express';
@@ -26,6 +27,9 @@ import prasyaratPemeriksaanRoutes from './modules/prasyarat-pemeriksaan/prasyara
 import emailRoutes from './modules/email/email.routes';
 
 const app: Application = express();
+
+// Enable Gzip / Deflate HTTP response compression
+app.use(compression());
 
 // Security Middlewares
 app.use(
