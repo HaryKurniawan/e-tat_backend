@@ -20,6 +20,9 @@ export const uploadPdfToSupabase = async (
   folder: string = 'dokumen',
   deleteAfterUpload: boolean = true
 ): Promise<SupabaseUploadResult> => {
+  if (!supabase) {
+    throw new Error('Supabase Storage tidak dikonfigurasi (SUPABASE_URL / KEY kosong).');
+  }
   try {
     const fileBuffer = fs.readFileSync(filePath);
     const originalExt = path.extname(filePath);
@@ -82,6 +85,9 @@ export const uploadPdfBufferToSupabase = async (
   filename: string,
   folder: string = 'dokumen'
 ): Promise<SupabaseUploadResult> => {
+  if (!supabase) {
+    throw new Error('Supabase Storage tidak dikonfigurasi (SUPABASE_URL / KEY kosong).');
+  }
   const sanitizedName = filename.replace(/[^a-zA-Z0-9_.-]/g, '_');
   const cleanFolder = folder.replace(/^\/+|\/+$/g, '') || 'dokumen';
   const destinationPath = `${cleanFolder}/${Date.now()}-${sanitizedName}`;
@@ -121,6 +127,9 @@ export const uploadPdfBase64ToSupabase = async (
   folder: string = 'dokumen',
   filenamePrefix: string = 'dokumen_tat'
 ): Promise<SupabaseUploadResult> => {
+  if (!supabase) {
+    throw new Error('Supabase Storage tidak dikonfigurasi (SUPABASE_URL / KEY kosong).');
+  }
   const base64Data = base64String.replace(/^data:application\/pdf;base64,/, '').replace(/^data:.*;base64,/, '');
   const buffer = Buffer.from(base64Data, 'base64');
   const cleanFolder = folder.replace(/^\/+|\/+$/g, '') || 'dokumen';
