@@ -19,4 +19,4 @@ RUN mkdir -p /app/uploads/dokumen /app/uploads/ktp /app/uploads/kta /app/uploads
 
 EXPOSE 5000
 
-CMD ["sh", "-c", "npx prisma db push --skip-generate && node dist/server.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate && node dist/src/server.js"]
