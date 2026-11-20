@@ -7,6 +7,7 @@ import { getParam } from '../../../utils/param.util';
 import { logAudit } from '../../../utils/audit.util';
 import { uploadPdfToSupabase } from '../../../utils/supabase.util';
 import { uploadFileToCloudinary } from '../../../utils/cloudinary.util';
+import { env } from '../../../config/env';
 
 /**
  * Upload Berita Acara yang telah ditandatangani
@@ -27,21 +28,23 @@ export const uploadBeritaAcaraSigned = async (
 
     let fileUrl = `/uploads/berita_acara/${req.file.filename}`;
 
-    // Upload PDF ke Supabase Storage (bucket: dokumen) atau Foto ke Cloudinary
-    try {
-      const ext = path.extname(req.file.originalname).toLowerCase();
-      const isPdf = req.file.mimetype === 'application/pdf' || ext === '.pdf';
-      const isImage = req.file.mimetype.startsWith('image/') || ['.jpg', '.jpeg', '.png', '.webp'].includes(ext);
+    // Upload PDF ke Supabase Storage (bucket: dokumen) atau Foto ke Cloudinary jika STORAGE_MODE != 'local'
+    if (env.STORAGE_MODE !== 'local') {
+      try {
+        const ext = path.extname(req.file.originalname).toLowerCase();
+        const isPdf = req.file.mimetype === 'application/pdf' || ext === '.pdf';
+        const isImage = req.file.mimetype.startsWith('image/') || ['.jpg', '.jpeg', '.png', '.webp'].includes(ext);
 
-      if (isPdf) {
-        const result = await uploadPdfToSupabase(req.file.path, 'berita_acara', false);
-        fileUrl = result.url;
-      } else if (isImage) {
-        const result = await uploadFileToCloudinary(req.file.path, 'berita_acara', false);
-        fileUrl = result.secure_url || result.url;
+        if (isPdf) {
+          const result = await uploadPdfToSupabase(req.file.path, 'berita_acara', false);
+          fileUrl = result.url;
+        } else if (isImage) {
+          const result = await uploadFileToCloudinary(req.file.path, 'berita_acara', false);
+          fileUrl = result.secure_url || result.url;
+        }
+      } catch (uploadErr) {
+        console.warn('Gagal upload Berita Acara ke cloud storage, fallback lokal:', uploadErr);
       }
-    } catch (uploadErr) {
-      console.warn('Gagal upload Berita Acara ke cloud storage, fallback lokal:', uploadErr);
     }
 
     // Check if permohonan exists in DB

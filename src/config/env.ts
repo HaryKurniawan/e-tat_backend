@@ -13,6 +13,7 @@ const envSchema = z.object({
 
   MAX_FILE_SIZE_MB: z.string().default('10').transform(Number),
   UPLOAD_DIR: z.string().default('./uploads'),
+  STORAGE_MODE: z.enum(['local', 'cloud']).default('cloud'),
 
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default('E-TAT POLRI <onboarding@resend.dev>'),
