@@ -20,6 +20,7 @@ export const registrasiSchema = z.object({
   fotoKtaName: z.string().optional(),
   suratPenunjukanUrl: z.string().optional(),
   suratPenunjukanName: z.string().optional(),
+  password: z.string().min(8, 'Kata sandi minimal 8 karakter').max(100).optional(),
 });
 
 export const approveRegistrasiSchema = z.object({

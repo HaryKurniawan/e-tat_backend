@@ -4,6 +4,7 @@ import { sendCreated, sendError } from '../../../utils/response.util';
 import { generateNomorRegistrasi } from '../../../utils/nomor.util';
 import { registrasiSchema } from '../registrasi.schema';
 import { logAudit } from '../../../utils/audit.util';
+import { hashPassword } from '../../../utils/hash.util';
 
 /**
  * POST /api/registrasi
@@ -45,13 +46,16 @@ export const submitRegistrasi = async (req: Request, res: Response, next: NextFu
     }
 
     const nomorRegistrasi = await generateNomorRegistrasi(data.instansi);
+    const { password, ...regData } = data;
+    const passwordHash = password ? await hashPassword(password) : null;
 
     const registrasi = await prisma.registrasiPengguna.create({
       data: {
-        ...data,
+        ...regData,
         email: data.email.toLowerCase(),
         nomorRegistrasi,
         kategoriInstansi: data.kategoriInstansi,
+        passwordHash,
         status: 'pending',
       },
     });
@@ -65,7 +69,8 @@ export const submitRegistrasi = async (req: Request, res: Response, next: NextFu
       ipAddress: req.ip,
     });
 
-    sendCreated(res, registrasi, 'Pendaftaran berhasil dikirim. Menunggu verifikasi admin.');
+    const { passwordHash: _omitted, ...safeRegistrasi } = registrasi;
+    sendCreated(res, safeRegistrasi, 'Pendaftaran berhasil dikirim. Menunggu verifikasi admin.');
   } catch (err) {
     next(err);
   }

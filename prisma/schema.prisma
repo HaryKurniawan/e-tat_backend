@@ -284,6 +284,7 @@ model RegistrasiPengguna {
   email            String
   phone            String
   teleponKantor    String?
+  passwordHash     String?
 
   // Bukti dokumen
   fotoKtpUrl          String?

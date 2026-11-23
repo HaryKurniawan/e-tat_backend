@@ -32,8 +32,8 @@ export const approveRegistrasi = async (req: Request, res: Response, next: NextF
       where: { email: registrasi.email.toLowerCase() },
     });
 
-    // Buat password sementara dari NRP
-    const tempPassword = await hashPassword(registrasi.nrp);
+    // Gunakan password yang dibuat pendaftar saat registrasi jika ada; fallback ke NRP jika belum ada
+    const userPasswordHash = registrasi.passwordHash || (await hashPassword(registrasi.nrp));
 
     // Jalankan dalam transaksi
     const [updatedReg, newUser] = await prisma.$transaction(async (tx) => {
@@ -73,7 +73,7 @@ export const approveRegistrasi = async (req: Request, res: Response, next: NextF
         user = await tx.user.create({
           data: {
             email: registrasi.email.toLowerCase(),
-            password: tempPassword,
+            password: userPasswordHash,
             role: resolvedRole,
             name: `${registrasi.pangkat ? registrasi.pangkat + ' ' : ''}${registrasi.namaLengkap}`,
             nip: registrasi.nrp,
@@ -114,7 +114,9 @@ export const approveRegistrasi = async (req: Request, res: Response, next: NextF
       approvedAt: updatedReg.approvedAt,
       approvedByNama: req.user!.name,
       role: newUser.role,
-      passwordAwal: registrasi.nrp,
+      passwordAwal: registrasi.passwordHash
+        ? 'Sesuai kata sandi yang Anda buat saat mendaftar'
+        : registrasi.nrp,
     }).catch((emailErr) => {
       console.warn('⚠️ Gagal mengirim email persetujuan akun:', emailErr?.message || emailErr);
     });
