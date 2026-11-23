@@ -8,8 +8,8 @@ export const permohonanFullInclude = {
   dokumenList: true,
   timAsesmen: {
     include: {
-      asesorMedis: { select: { id: true, name: true } },
-      asesorHukum: { select: { id: true, name: true } },
+      asesorMedis: { select: { id: true, name: true, email: true } },
+      asesorHukum: { select: { id: true, name: true, email: true } },
       sekretariat: { select: { id: true, name: true } },
     },
   },

@@ -41,14 +41,19 @@ export const getPermohonanList = async (
         take: limit,
         orderBy: { tanggalPengajuan: 'desc' },
         include: {
-          pengaju: { select: { id: true, name: true, agency: true, nip: true, phone: true } },
+          pengaju: { select: { id: true, name: true, email: true, agency: true, nip: true, phone: true } },
           terperiksa: true,
           perkara: {
             include: {
               barangBuktiList: true,
             },
           },
-          timAsesmen: true,
+          timAsesmen: {
+            include: {
+              asesorMedis: { select: { id: true, name: true, email: true } },
+              asesorHukum: { select: { id: true, name: true, email: true } },
+            },
+          },
           dokumenList: true,
           asesmenMedis: {
             include: {
