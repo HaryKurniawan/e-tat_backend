@@ -178,6 +178,7 @@ export const simpanHasilPleno = async (
         ...result,
         ...(body.fotoKehadiranUrl ? { fotoKehadiranUrl: body.fotoKehadiranUrl } : {}),
         ...(body.fotoKehadiranKeterangan ? { fotoKehadiranKeterangan: body.fotoKehadiranKeterangan } : {}),
+        ...(body.fotoKehadiranList ? { fotoKehadiranList: body.fotoKehadiranList } : {}),
       },
       'Hasil sidang pleno berhasil disimpan'
     );

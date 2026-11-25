@@ -33,4 +33,12 @@ export const hasilPlenoSchema = z.object({
   daftarHadir: z.array(daftarHadirItemSchema).optional(),
   fotoKehadiranUrl: z.string().optional(),
   fotoKehadiranKeterangan: z.string().optional(),
+  fotoKehadiranList: z
+    .array(
+      z.object({
+        url: z.string(),
+        keterangan: z.string().optional(),
+      })
+    )
+    .optional(),
 });
