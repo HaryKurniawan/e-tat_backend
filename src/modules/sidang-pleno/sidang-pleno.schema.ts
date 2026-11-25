@@ -31,4 +31,6 @@ export const hasilPlenoSchema = z.object({
     .enum(['terjadwal', 'berlangsung', 'selesai_sepakat', 'butuh_klarifikasi_tambahan'])
     .default('selesai_sepakat'),
   daftarHadir: z.array(daftarHadirItemSchema).optional(),
+  fotoKehadiranUrl: z.string().optional(),
+  fotoKehadiranKeterangan: z.string().optional(),
 });

@@ -172,7 +172,15 @@ export const simpanHasilPleno = async (
       rincian: `Hasil sidang pleno dicatat dengan BA: ${nomorBA}`,
     });
 
-    sendSuccess(res, result, 'Hasil sidang pleno berhasil disimpan');
+    sendSuccess(
+      res,
+      {
+        ...result,
+        ...(body.fotoKehadiranUrl ? { fotoKehadiranUrl: body.fotoKehadiranUrl } : {}),
+        ...(body.fotoKehadiranKeterangan ? { fotoKehadiranKeterangan: body.fotoKehadiranKeterangan } : {}),
+      },
+      'Hasil sidang pleno berhasil disimpan'
+    );
   } catch (err) {
     next(err);
   }

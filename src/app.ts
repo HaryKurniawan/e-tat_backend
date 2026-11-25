@@ -9,6 +9,7 @@ import swaggerUi from 'swagger-ui-express';
 import { env } from './config/env';
 import { swaggerSpec } from './config/swagger';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
+import { uploadBaseDir } from './utils/upload.util';
 
 // Import route modules
 import authRoutes from './modules/auth/auth.routes';
@@ -70,7 +71,7 @@ app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
 // Static uploads folder
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+app.use('/uploads', express.static(uploadBaseDir));
 
 // Swagger Documentation UI & OpenAPI Spec
 try {

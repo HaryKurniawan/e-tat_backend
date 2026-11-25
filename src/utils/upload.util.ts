@@ -2,14 +2,15 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { Request } from 'express';
+import { env } from '../config/env';
 
-// Ensure upload directories exist (support serverless /tmp directory)
+// Ensure upload directories exist (support serverless /tmp directory or VPS UPLOAD_DIR)
 const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 export const uploadBaseDir = isServerless
   ? path.join('/tmp', 'uploads')
-  : path.join(process.cwd(), 'uploads');
+  : path.resolve(env.UPLOAD_DIR || path.join(process.cwd(), 'uploads'));
 
-const directories = ['dokumen', 'ktp', 'kta', 'rekomendasi', 'bukti', 'berita_acara'];
+const directories = ['dokumen', 'ktp', 'kta', 'rekomendasi', 'bukti', 'berita_acara', 'pleno-kehadiran'];
 
 try {
   directories.forEach((dir) => {
@@ -30,6 +31,7 @@ const storage = multer.diskStorage({
     else if (file.fieldname.includes('rekomendasi')) subfolder = 'rekomendasi';
     else if (file.fieldname.includes('bukti')) subfolder = 'bukti';
     else if (file.fieldname.includes('berita')) subfolder = 'berita_acara';
+    else if (file.fieldname.includes('kehadiran')) subfolder = 'pleno-kehadiran';
 
     const targetDir = path.join(uploadBaseDir, subfolder);
     cb(null, targetDir);
@@ -43,12 +45,12 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx'];
+  const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.webp', '.doc', '.docx'];
   const ext = path.extname(file.originalname).toLowerCase();
   if (allowedExtensions.includes(ext)) {
     cb(null, true);
   } else {
-    cb(new Error(`Tipe file tidak didukung: ${ext}. Gunakan PDF, JPG, PNG, atau DOC.`));
+    cb(new Error(`Tipe file tidak didukung: ${ext}. Gunakan PDF, JPG, PNG, WEBP, atau DOC.`));
   }
 };
 
